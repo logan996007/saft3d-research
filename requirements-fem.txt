@@ -1,0 +1,3 @@
+-r requirements.txt
+scikit-fem==11.0.0
+matplotlib==3.10.8

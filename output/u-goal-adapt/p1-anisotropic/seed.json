@@ -1,0 +1,68 @@
+{
+  "label": "z3_weight1.0_aspect5",
+  "generation": {
+    "backend": "cuda",
+    "device": {
+      "backend": "cupy RawModule / NVRTC",
+      "device": "NVIDIA GeForce GTX 1660 Ti",
+      "device_id": 0,
+      "compute_capability": "7.5",
+      "total_memory_bytes": 6442123264,
+      "free_memory_bytes_at_init": 5381292032,
+      "cupy_version": "13.6.0",
+      "cuda_runtime_version": 12090,
+      "cuda_driver_version": 13020
+    },
+    "cap_triangles": 588,
+    "cap_vertices": 346,
+    "cap_boundary_nodes": 102,
+    "z_planes": 3,
+    "cuda_advance_kernels": 2,
+    "method": "thickness_front directional prism advance (sweep kernel) on error-adapted triangular cross-section",
+    "cpu_completion": false
+  },
+  "elasticity": {
+    "young_modulus_Pa": 200000000000.0,
+    "poisson_ratio": 0.3,
+    "active_vertices": 1038,
+    "free_dofs": 3078,
+    "tetrahedra": 3528,
+    "reaction_N": [
+      -999999.9999997419,
+      -1.2354576028883457e-06,
+      8.3915438153781e-08
+    ],
+    "external_force_N": [
+      1000000.0000000001,
+      0.0,
+      0.0
+    ],
+    "force_balance_relative": 1.264938445893748e-12,
+    "free_residual_relative": 2.95581079169189e-12,
+    "strain_energy_J": 545.4326505824922,
+    "compliance_J": 1090.865301166187,
+    "energy_identity_relative": 1.1024086733106641e-12,
+    "max_nodal_displacement_m": 0.001356938743992488,
+    "max_element_von_mises_Pa": 29395828.75690593,
+    "traction_x_Pa": 1000000.0,
+    "loaded_area_m2": 1.0,
+    "clamped_area_m2": 1.0,
+    "mean_loaded_ux_m": 0.001090865301166187,
+    "solve_seconds": 0.12555100000463426
+  },
+  "estimator": {
+    "pilot_dofs": 3078,
+    "pilot_mean_loaded_ux_m": 0.001014319310025681,
+    "patch_size": 32,
+    "method": "weighted least-squares recovery of displacement-gradient variation from the 3078-DOF P1 solve"
+  },
+  "parameters": {
+    "size_exponent": 1.0,
+    "aspect_limit": 5,
+    "CVT_iterations": 20,
+    "quadrature_samples_per_m": 46,
+    "seed": 3141
+  },
+  "pilot_source": "output/local-refinement/u/level2.npz",
+  "pilot_sha256": "be9523831b12770752ada9eff6aae4d99324f063e6f1bd4a52ddb8b5ce61eb5c"
+}

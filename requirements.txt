@@ -1,0 +1,5 @@
+numpy==1.26.4
+scipy==1.15.3
+tetgen==0.8.4
+pytest>=8,<9
+# Optional GPU backend: pip install "cupy-cuda12x>=13,<14"

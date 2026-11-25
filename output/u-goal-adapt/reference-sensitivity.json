@@ -1,0 +1,11 @@
+{
+  "mean_loaded_ux_m": 0.001181283260590115,
+  "order": 2,
+  "free_dofs": 126159,
+  "loaded_area_m2": 1.0,
+  "tetrahedra": 28366,
+  "mesh_vertices": 5822,
+  "tetgen_flags": "pMq1.8a0.00045Qz",
+  "elapsed_seconds": 192.21834139991552,
+  "purpose": "Reference sensitivity only; excluded from design and the 3078-DOF comparison."
+}

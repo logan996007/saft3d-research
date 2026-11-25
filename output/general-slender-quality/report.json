@@ -1,0 +1,381 @@
+{
+  "source": "slender_s",
+  "run": {
+    "algorithm": "3D SAFT-inspired local AFT with explicit CPU constrained cavity completion",
+    "config": {
+      "backend": "cuda",
+      "size": 0.4,
+      "batch_size": 64,
+      "candidate_vertices": 48,
+      "min_quality": 0.08,
+      "new_vertex_min_quality": 0.18,
+      "max_new_vertices": 12,
+      "max_iterations": 2000,
+      "max_tets": 10000,
+      "tolerance": 1e-10,
+      "completion": "tetgen",
+      "completion_timeout": 60.0,
+      "max_completion_rollback": 32
+    },
+    "backend": "cuda",
+    "device": {
+      "backend": "cupy RawModule / NVRTC",
+      "device": "NVIDIA GeForce GTX 1660 Ti",
+      "device_id": 0,
+      "compute_capability": "7.5",
+      "total_memory_bytes": 6442123264,
+      "free_memory_bytes_at_init": 5383389184,
+      "cupy_version": "13.6.0",
+      "cuda_runtime_version": 12090,
+      "cuda_driver_version": 13020
+    },
+    "backend_stats": {
+      "backend": "cuda",
+      "device_info": {
+        "backend": "cupy RawModule / NVRTC",
+        "device": "NVIDIA GeForce GTX 1660 Ti",
+        "device_id": 0,
+        "compute_capability": "7.5",
+        "total_memory_bytes": 6442123264,
+        "free_memory_bytes_at_init": 5383389184,
+        "cupy_version": "13.6.0",
+        "cuda_runtime_version": 12090,
+        "cuda_driver_version": 13020
+      },
+      "fallback_reason": null,
+      "timings_seconds": {
+        "propose_local": 0.006128000328317285,
+        "evaluate": 0.009878500131890178,
+        "conflicts": 0.00632039993070066,
+        "overlaps": 0.030852299882099032
+      },
+      "calls": {
+        "propose_local": 12,
+        "evaluate": 12,
+        "conflicts": 10,
+        "overlaps": 11
+      },
+      "kernel_calls": {
+        "propose_local_tets": 12,
+        "evaluate_tets": 12,
+        "aabb_conflicts": 10,
+        "tet_overlaps": 11
+      }
+    },
+    "initial_volume": 0.9936000000000004,
+    "iterations": 10,
+    "proposals": 13657,
+    "new_vertices": 12,
+    "growth_tets": 34,
+    "closure_tets": 56,
+    "remaining_front_faces": 0,
+    "aft_stop_reason": "no_legal_candidate",
+    "meshing_seconds": 4.580412899842486,
+    "history": [
+      {
+        "iteration": 0,
+        "front_faces": 52,
+        "proposals": 808,
+        "winners": 20,
+        "accepted": 4,
+        "new_vertices": 4
+      },
+      {
+        "iteration": 1,
+        "front_faces": 56,
+        "proposals": 1072,
+        "winners": 26,
+        "accepted": 4,
+        "new_vertices": 6
+      },
+      {
+        "iteration": 2,
+        "front_faces": 60,
+        "proposals": 1180,
+        "winners": 30,
+        "accepted": 6,
+        "new_vertices": 8
+      },
+      {
+        "iteration": 3,
+        "front_faces": 64,
+        "proposals": 1402,
+        "winners": 32,
+        "accepted": 4,
+        "new_vertices": 10
+      },
+      {
+        "iteration": 4,
+        "front_faces": 68,
+        "proposals": 1578,
+        "winners": 30,
+        "accepted": 4,
+        "new_vertices": 12
+      },
+      {
+        "iteration": 5,
+        "front_faces": 68,
+        "proposals": 1274,
+        "winners": 12,
+        "accepted": 4,
+        "new_vertices": 12
+      },
+      {
+        "iteration": 6,
+        "front_faces": 68,
+        "proposals": 1288,
+        "winners": 6,
+        "accepted": 2,
+        "new_vertices": 12
+      },
+      {
+        "iteration": 7,
+        "front_faces": 72,
+        "proposals": 1282,
+        "winners": 6,
+        "accepted": 2,
+        "new_vertices": 12
+      },
+      {
+        "iteration": 8,
+        "front_faces": 70,
+        "proposals": 1232,
+        "winners": 6,
+        "accepted": 2,
+        "new_vertices": 12
+      },
+      {
+        "iteration": 9,
+        "front_faces": 68,
+        "proposals": 1269,
+        "winners": 4,
+        "accepted": 2,
+        "new_vertices": 12
+      }
+    ],
+    "legality_stats": {
+      "calls": 1112,
+      "contains_calls": 1112,
+      "pair_checks": 4180,
+      "lp_calls": 702,
+      "rejections": 940
+    },
+    "limitations": [
+      "local AFT may stall; explicit bounded rollback expands CPU-completed residual cavities",
+      "float64 geometry with independent LP checks, not exact predicates",
+      "size is a local heuristic and boundary is fixed"
+    ],
+    "completion_attempts": [
+      {
+        "rolled_back_tets": 0,
+        "retained_aft_tets": 34,
+        "rolled_back_tet_indices": [],
+        "front_faces": 68,
+        "status": "completed"
+      }
+    ],
+    "provisional_aft_tets": 34,
+    "cpu_completion": {
+      "tetgen_version": "0.8.4",
+      "switches": "pYYJMQzO0S9966",
+      "tetgen_raw_tet_count": 56,
+      "discarded_region_tets": 0,
+      "tetgen_added_point_count": 1,
+      "region_filter": "FrontGeometry.contains: residual oriented winding near 1; holes near 0 discarded",
+      "plc_triangles_preserved": true,
+      "worker_seconds": 0.014547999948263168,
+      "backend": "cpu_tetgen",
+      "method": "CPU constrained-Delaunay residual-cavity completion",
+      "gpu": false,
+      "pure_aft": false,
+      "original_global_points": 36,
+      "input_cavity_points": 36,
+      "input_front_faces": 68,
+      "new_tet_count": 56,
+      "new_point_count": 1,
+      "cavity_volume": 0.8128588431740192,
+      "new_tet_volume": 0.8128588431740194,
+      "relative_volume_error": 1.3658251170523056e-16,
+      "boundary_exact": true,
+      "global_prefix_unchanged": true,
+      "wall_seconds": 0.7310661000665277,
+      "logs": "parsing switches\nsuccess",
+      "validation_scope": "Residual PLC and boundary checked; caller must validate union with existing tets"
+    },
+    "rolled_back_aft_tets": 0,
+    "rolled_back_aft_indices": [],
+    "aft_volume_fraction": 0.18190535107284683,
+    "completion_volume_fraction": 0.8180946489271532,
+    "generation_tet_count": 90,
+    "optimization": {
+      "method": "fixed-boundary interior-vertex mean-ratio pattern search",
+      "before": {
+        "min": 0.0037145515785565178,
+        "p05": 0.009108091229203873,
+        "median": 0.05407731173440132
+      },
+      "after": {
+        "min": 0.01977151990535604,
+        "p05": 0.025173711412197836,
+        "median": 0.06894207570090233
+      },
+      "moves": 77,
+      "moved_vertex_count": 13,
+      "iterations": 8,
+      "moves_per_sweep": [
+        11,
+        12,
+        10,
+        8,
+        10,
+        8,
+        6,
+        12
+      ],
+      "interior_vertex_count": 13,
+      "fixed_boundary_vertex_count": 24,
+      "unused_vertex_count": 0,
+      "evaluated_candidates": 1010,
+      "backend": "cuda",
+      "backend_stats": {
+        "backend": "cuda",
+        "device_info": {
+          "backend": "cupy RawModule / NVRTC",
+          "device": "NVIDIA GeForce GTX 1660 Ti",
+          "device_id": 0,
+          "compute_capability": "7.5",
+          "total_memory_bytes": 6442123264,
+          "free_memory_bytes_at_init": 5381292032,
+          "cupy_version": "13.6.0",
+          "cuda_runtime_version": 12090,
+          "cuda_driver_version": 13020
+        },
+        "fallback_reason": null,
+        "timings_seconds": {
+          "evaluate": 0.0430320012383163
+        },
+        "calls": {
+          "evaluate": 106
+        },
+        "kernel_calls": {
+          "evaluate_tets": 106
+        }
+      },
+      "kernel_counts": {
+        "evaluate_tets": 106
+      },
+      "rollback_reason": null,
+      "seconds": 0.10236030002124608,
+      "guarantee_scope": "accepted moves preserve positive incident volumes and improve their minimum mean ratio; no guarantee of eliminating all slivers"
+    },
+    "topology_optimization": {
+      "method": "fixed-vertex 2-to-3 / 3-to-2 quality flips",
+      "before": {
+        "min": 0.019771519905356038,
+        "p05": 0.025173711412197833,
+        "median": 0.06894207570090231
+      },
+      "after": {
+        "min": 0.019771519905356038,
+        "p05": 0.02611973387418742,
+        "median": 0.06296720537344491
+      },
+      "initial_tet_count": 90,
+      "final_tet_count": 90,
+      "accepted_flips": 8,
+      "flips": {
+        "2_to_3": 4,
+        "3_to_2": 4
+      },
+      "attempts": {
+        "2_to_3": 742,
+        "3_to_2": 80
+      },
+      "rejections": {
+        "patch_boundary_changed": 531,
+        "no_quality_gain": 162,
+        "degenerate_new_tet": 121
+      },
+      "max_passes": 3,
+      "passes_completed": 1,
+      "moves_per_pass": [
+        8
+      ],
+      "acceptance_limits": {
+        "per_pass": 128,
+        "total": 384
+      },
+      "min_gain": 1e-08,
+      "boundary_preserved": true,
+      "stop_reason": "no_improving_flip",
+      "rollback_reason": null,
+      "seconds": 0.4787560999393463,
+      "limitations": [
+        "local minimum-quality improvement; not all slivers can be removed",
+        "float64 tolerance predicates; validate initial and final meshes independently"
+      ]
+    },
+    "final_tet_count": 90
+  },
+  "validation": {
+    "valid": true,
+    "errors": [],
+    "vertex_count": 37,
+    "tet_count": 90,
+    "boundary_face_count": 44,
+    "extracted_boundary_face_count": 44,
+    "checked_pairs": 1312,
+    "certified_pairs": 1286,
+    "total_pairs": 4005,
+    "lp_calls": 26,
+    "overlap_count": 0,
+    "overlap_pairs": [],
+    "nonconforming_contact_count": 0,
+    "nonconforming_contact_pairs": [],
+    "intersection_failure_count": 0,
+    "intersection_failures": [],
+    "geometric_intersections_checked": true,
+    "numerical_validation": true,
+    "validation_note": "Floating-point, tolerance-based validation; not an exact-arithmetic proof. Geometric pair details are capped at 50; counts are exhaustive.",
+    "tolerances": {
+      "volume": 6.4e-11,
+      "coordinate": 4e-10,
+      "barycentric": 1e-08,
+      "relative_volume": 1e-07
+    },
+    "positive_tet_count": 90,
+    "inverted_tet_count": 0,
+    "degenerate_tet_count": 0,
+    "min_signed_volume": 0.0009942511341674333,
+    "signed_volume_sum": 0.9936000000000003,
+    "positive_volume_min": 0.0009942511341674333,
+    "positive_volume_sum": 0.9936000000000003,
+    "duplicate_tet_count": 0,
+    "internal_face_count": 158,
+    "nonmanifold_face_count": 0,
+    "internal_orientation_error_count": 0,
+    "face_manifold": true,
+    "internal_faces_oppositely_oriented": true,
+    "boundary_faces_match": true,
+    "missing_boundary_face_count": 0,
+    "extra_boundary_face_count": 0,
+    "missing_boundary_faces": [],
+    "extra_boundary_faces": [],
+    "duplicate_boundary_face_count": 0,
+    "boundary_orientation_error_count": 0,
+    "boundary_edge_error_count": 0,
+    "boundary_closed_oriented": true,
+    "signed_boundary_volume": 0.9936000000000001,
+    "relative_volume_error": 1.1173742196307934e-16,
+    "unused_vertex_count": 0,
+    "unused_vertex_indices": [],
+    "quality": {
+      "metric": "mean_ratio: 12*(3*abs(volume))^(2/3)/sum(squared_edge_lengths)",
+      "ideal": 1.0,
+      "min": 0.019771519905356038,
+      "p05": 0.026119733874187413,
+      "median": 0.0629672053734449
+    },
+    "validation_seconds": 0.2678773000370711
+  }
+}

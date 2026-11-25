@@ -1,0 +1,813 @@
+{
+  "source": "slender_s",
+  "run": {
+    "algorithm": "3D SAFT-inspired local AFT with explicit CPU constrained cavity completion",
+    "config": {
+      "backend": "cuda",
+      "size": 0.4,
+      "batch_size": 64,
+      "candidate_vertices": 48,
+      "min_quality": 0.0001,
+      "new_vertex_min_quality": 0.12,
+      "max_new_vertices": 48,
+      "max_iterations": 2000,
+      "max_tets": 10000,
+      "tolerance": 1e-10,
+      "completion": "tetgen",
+      "completion_timeout": 60.0,
+      "max_completion_rollback": 32
+    },
+    "backend": "cuda",
+    "device": {
+      "backend": "cupy RawModule / NVRTC",
+      "device": "NVIDIA GeForce GTX 1660 Ti",
+      "device_id": 0,
+      "compute_capability": "7.5",
+      "total_memory_bytes": 6442123264,
+      "free_memory_bytes_at_init": 5383389184,
+      "cupy_version": "13.6.0",
+      "cuda_runtime_version": 12090,
+      "cuda_driver_version": 13020
+    },
+    "backend_stats": {
+      "backend": "cuda",
+      "device_info": {
+        "backend": "cupy RawModule / NVRTC",
+        "device": "NVIDIA GeForce GTX 1660 Ti",
+        "device_id": 0,
+        "compute_capability": "7.5",
+        "total_memory_bytes": 6442123264,
+        "free_memory_bytes_at_init": 5383389184,
+        "cupy_version": "13.6.0",
+        "cuda_runtime_version": 12090,
+        "cuda_driver_version": 13020
+      },
+      "fallback_reason": null,
+      "timings_seconds": {
+        "propose_local": 0.03652349999174476,
+        "evaluate": 0.0433956000051694,
+        "conflicts": 0.036235900020983536,
+        "overlaps": 0.40887530003965367
+      },
+      "calls": {
+        "propose_local": 65,
+        "evaluate": 65,
+        "conflicts": 64,
+        "overlaps": 64
+      },
+      "kernel_calls": {
+        "propose_local_tets": 65,
+        "evaluate_tets": 65,
+        "aabb_conflicts": 64,
+        "tet_overlaps": 64
+      }
+    },
+    "initial_volume": 0.9936000000000004,
+    "iterations": 64,
+    "proposals": 76238,
+    "new_vertices": 48,
+    "growth_tets": 231,
+    "closure_tets": 2,
+    "remaining_front_faces": 0,
+    "aft_stop_reason": "no_legal_candidate",
+    "meshing_seconds": 17.41743210000277,
+    "history": [
+      {
+        "iteration": 0,
+        "front_faces": 52,
+        "proposals": 808,
+        "winners": 44,
+        "accepted": 4,
+        "new_vertices": 4
+      },
+      {
+        "iteration": 1,
+        "front_faces": 56,
+        "proposals": 1072,
+        "winners": 52,
+        "accepted": 4,
+        "new_vertices": 6
+      },
+      {
+        "iteration": 2,
+        "front_faces": 56,
+        "proposals": 1180,
+        "winners": 56,
+        "accepted": 6,
+        "new_vertices": 6
+      },
+      {
+        "iteration": 3,
+        "front_faces": 60,
+        "proposals": 1212,
+        "winners": 56,
+        "accepted": 4,
+        "new_vertices": 8
+      },
+      {
+        "iteration": 4,
+        "front_faces": 56,
+        "proposals": 1418,
+        "winners": 60,
+        "accepted": 4,
+        "new_vertices": 8
+      },
+      {
+        "iteration": 5,
+        "front_faces": 64,
+        "proposals": 1274,
+        "winners": 56,
+        "accepted": 4,
+        "new_vertices": 10
+      },
+      {
+        "iteration": 6,
+        "front_faces": 70,
+        "proposals": 1532,
+        "winners": 64,
+        "accepted": 3,
+        "new_vertices": 10
+      },
+      {
+        "iteration": 7,
+        "front_faces": 66,
+        "proposals": 1534,
+        "winners": 60,
+        "accepted": 3,
+        "new_vertices": 10
+      },
+      {
+        "iteration": 8,
+        "front_faces": 64,
+        "proposals": 1499,
+        "winners": 59,
+        "accepted": 3,
+        "new_vertices": 10
+      },
+      {
+        "iteration": 9,
+        "front_faces": 64,
+        "proposals": 1462,
+        "winners": 58,
+        "accepted": 4,
+        "new_vertices": 12
+      },
+      {
+        "iteration": 10,
+        "front_faces": 70,
+        "proposals": 1514,
+        "winners": 64,
+        "accepted": 5,
+        "new_vertices": 14
+      },
+      {
+        "iteration": 11,
+        "front_faces": 70,
+        "proposals": 1611,
+        "winners": 64,
+        "accepted": 5,
+        "new_vertices": 16
+      },
+      {
+        "iteration": 12,
+        "front_faces": 72,
+        "proposals": 1734,
+        "winners": 64,
+        "accepted": 4,
+        "new_vertices": 17
+      },
+      {
+        "iteration": 13,
+        "front_faces": 68,
+        "proposals": 1703,
+        "winners": 64,
+        "accepted": 3,
+        "new_vertices": 17
+      },
+      {
+        "iteration": 14,
+        "front_faces": 68,
+        "proposals": 1620,
+        "winners": 64,
+        "accepted": 4,
+        "new_vertices": 18
+      },
+      {
+        "iteration": 15,
+        "front_faces": 72,
+        "proposals": 1595,
+        "winners": 64,
+        "accepted": 4,
+        "new_vertices": 20
+      },
+      {
+        "iteration": 16,
+        "front_faces": 74,
+        "proposals": 1606,
+        "winners": 64,
+        "accepted": 4,
+        "new_vertices": 21
+      },
+      {
+        "iteration": 17,
+        "front_faces": 76,
+        "proposals": 1639,
+        "winners": 64,
+        "accepted": 5,
+        "new_vertices": 23
+      },
+      {
+        "iteration": 18,
+        "front_faces": 80,
+        "proposals": 1750,
+        "winners": 64,
+        "accepted": 6,
+        "new_vertices": 24
+      },
+      {
+        "iteration": 19,
+        "front_faces": 80,
+        "proposals": 1808,
+        "winners": 64,
+        "accepted": 7,
+        "new_vertices": 26
+      },
+      {
+        "iteration": 20,
+        "front_faces": 72,
+        "proposals": 1837,
+        "winners": 64,
+        "accepted": 6,
+        "new_vertices": 26
+      },
+      {
+        "iteration": 21,
+        "front_faces": 64,
+        "proposals": 1852,
+        "winners": 64,
+        "accepted": 6,
+        "new_vertices": 27
+      },
+      {
+        "iteration": 22,
+        "front_faces": 68,
+        "proposals": 1846,
+        "winners": 64,
+        "accepted": 6,
+        "new_vertices": 29
+      },
+      {
+        "iteration": 23,
+        "front_faces": 68,
+        "proposals": 1911,
+        "winners": 64,
+        "accepted": 4,
+        "new_vertices": 29
+      },
+      {
+        "iteration": 24,
+        "front_faces": 68,
+        "proposals": 1808,
+        "winners": 64,
+        "accepted": 3,
+        "new_vertices": 29
+      },
+      {
+        "iteration": 25,
+        "front_faces": 70,
+        "proposals": 1805,
+        "winners": 64,
+        "accepted": 7,
+        "new_vertices": 31
+      },
+      {
+        "iteration": 26,
+        "front_faces": 70,
+        "proposals": 1985,
+        "winners": 64,
+        "accepted": 6,
+        "new_vertices": 32
+      },
+      {
+        "iteration": 27,
+        "front_faces": 60,
+        "proposals": 1942,
+        "winners": 64,
+        "accepted": 6,
+        "new_vertices": 33
+      },
+      {
+        "iteration": 28,
+        "front_faces": 54,
+        "proposals": 1681,
+        "winners": 60,
+        "accepted": 7,
+        "new_vertices": 34
+      },
+      {
+        "iteration": 29,
+        "front_faces": 54,
+        "proposals": 1313,
+        "winners": 54,
+        "accepted": 4,
+        "new_vertices": 34
+      },
+      {
+        "iteration": 30,
+        "front_faces": 60,
+        "proposals": 1241,
+        "winners": 54,
+        "accepted": 5,
+        "new_vertices": 36
+      },
+      {
+        "iteration": 31,
+        "front_faces": 60,
+        "proposals": 1397,
+        "winners": 60,
+        "accepted": 4,
+        "new_vertices": 38
+      },
+      {
+        "iteration": 32,
+        "front_faces": 60,
+        "proposals": 1483,
+        "winners": 60,
+        "accepted": 4,
+        "new_vertices": 40
+      },
+      {
+        "iteration": 33,
+        "front_faces": 60,
+        "proposals": 1439,
+        "winners": 60,
+        "accepted": 4,
+        "new_vertices": 40
+      },
+      {
+        "iteration": 34,
+        "front_faces": 60,
+        "proposals": 1403,
+        "winners": 60,
+        "accepted": 2,
+        "new_vertices": 40
+      },
+      {
+        "iteration": 35,
+        "front_faces": 60,
+        "proposals": 1375,
+        "winners": 60,
+        "accepted": 2,
+        "new_vertices": 40
+      },
+      {
+        "iteration": 36,
+        "front_faces": 56,
+        "proposals": 1423,
+        "winners": 60,
+        "accepted": 2,
+        "new_vertices": 40
+      },
+      {
+        "iteration": 37,
+        "front_faces": 62,
+        "proposals": 1265,
+        "winners": 56,
+        "accepted": 6,
+        "new_vertices": 44
+      },
+      {
+        "iteration": 38,
+        "front_faces": 66,
+        "proposals": 1468,
+        "winners": 62,
+        "accepted": 6,
+        "new_vertices": 47
+      },
+      {
+        "iteration": 39,
+        "front_faces": 62,
+        "proposals": 1627,
+        "winners": 63,
+        "accepted": 7,
+        "new_vertices": 48
+      },
+      {
+        "iteration": 40,
+        "front_faces": 58,
+        "proposals": 1150,
+        "winners": 60,
+        "accepted": 4,
+        "new_vertices": 48
+      },
+      {
+        "iteration": 41,
+        "front_faces": 58,
+        "proposals": 983,
+        "winners": 56,
+        "accepted": 3,
+        "new_vertices": 48
+      },
+      {
+        "iteration": 42,
+        "front_faces": 58,
+        "proposals": 945,
+        "winners": 56,
+        "accepted": 3,
+        "new_vertices": 48
+      },
+      {
+        "iteration": 43,
+        "front_faces": 58,
+        "proposals": 962,
+        "winners": 56,
+        "accepted": 4,
+        "new_vertices": 48
+      },
+      {
+        "iteration": 44,
+        "front_faces": 58,
+        "proposals": 946,
+        "winners": 56,
+        "accepted": 2,
+        "new_vertices": 48
+      },
+      {
+        "iteration": 45,
+        "front_faces": 58,
+        "proposals": 992,
+        "winners": 54,
+        "accepted": 2,
+        "new_vertices": 48
+      },
+      {
+        "iteration": 46,
+        "front_faces": 56,
+        "proposals": 973,
+        "winners": 54,
+        "accepted": 2,
+        "new_vertices": 48
+      },
+      {
+        "iteration": 47,
+        "front_faces": 50,
+        "proposals": 884,
+        "winners": 52,
+        "accepted": 2,
+        "new_vertices": 48
+      },
+      {
+        "iteration": 48,
+        "front_faces": 50,
+        "proposals": 757,
+        "winners": 46,
+        "accepted": 2,
+        "new_vertices": 48
+      },
+      {
+        "iteration": 49,
+        "front_faces": 50,
+        "proposals": 755,
+        "winners": 46,
+        "accepted": 2,
+        "new_vertices": 48
+      },
+      {
+        "iteration": 50,
+        "front_faces": 50,
+        "proposals": 738,
+        "winners": 45,
+        "accepted": 2,
+        "new_vertices": 48
+      },
+      {
+        "iteration": 51,
+        "front_faces": 48,
+        "proposals": 743,
+        "winners": 43,
+        "accepted": 2,
+        "new_vertices": 48
+      },
+      {
+        "iteration": 52,
+        "front_faces": 44,
+        "proposals": 700,
+        "winners": 40,
+        "accepted": 2,
+        "new_vertices": 48
+      },
+      {
+        "iteration": 53,
+        "front_faces": 38,
+        "proposals": 581,
+        "winners": 36,
+        "accepted": 2,
+        "new_vertices": 48
+      },
+      {
+        "iteration": 54,
+        "front_faces": 38,
+        "proposals": 471,
+        "winners": 30,
+        "accepted": 2,
+        "new_vertices": 48
+      },
+      {
+        "iteration": 55,
+        "front_faces": 36,
+        "proposals": 478,
+        "winners": 30,
+        "accepted": 2,
+        "new_vertices": 48
+      },
+      {
+        "iteration": 56,
+        "front_faces": 32,
+        "proposals": 427,
+        "winners": 28,
+        "accepted": 2,
+        "new_vertices": 48
+      },
+      {
+        "iteration": 57,
+        "front_faces": 24,
+        "proposals": 336,
+        "winners": 24,
+        "accepted": 2,
+        "new_vertices": 48
+      },
+      {
+        "iteration": 58,
+        "front_faces": 22,
+        "proposals": 189,
+        "winners": 16,
+        "accepted": 1,
+        "new_vertices": 48
+      },
+      {
+        "iteration": 59,
+        "front_faces": 20,
+        "proposals": 165,
+        "winners": 14,
+        "accepted": 1,
+        "new_vertices": 48
+      },
+      {
+        "iteration": 60,
+        "front_faces": 18,
+        "proposals": 136,
+        "winners": 12,
+        "accepted": 1,
+        "new_vertices": 48
+      },
+      {
+        "iteration": 61,
+        "front_faces": 14,
+        "proposals": 109,
+        "winners": 10,
+        "accepted": 1,
+        "new_vertices": 48
+      },
+      {
+        "iteration": 62,
+        "front_faces": 12,
+        "proposals": 68,
+        "winners": 6,
+        "accepted": 1,
+        "new_vertices": 48
+      },
+      {
+        "iteration": 63,
+        "front_faces": 8,
+        "proposals": 54,
+        "winners": 4,
+        "accepted": 1,
+        "new_vertices": 48
+      }
+    ],
+    "legality_stats": {
+      "calls": 4444,
+      "contains_calls": 4444,
+      "pair_checks": 71356,
+      "lp_calls": 3290,
+      "rejections": 1144
+    },
+    "limitations": [
+      "local AFT may stall; explicit bounded rollback expands CPU-completed residual cavities",
+      "float64 geometry with independent LP checks, not exact predicates",
+      "size is a local heuristic and boundary is fixed"
+    ],
+    "completion_attempts": [
+      {
+        "rolled_back_tets": 0,
+        "retained_aft_tets": 231,
+        "rolled_back_tet_indices": [],
+        "front_faces": 8,
+        "status": "completed"
+      }
+    ],
+    "provisional_aft_tets": 231,
+    "cpu_completion": {
+      "tetgen_version": "0.8.4",
+      "switches": "pYYJMQzO0S9769",
+      "tetgen_raw_tet_count": 2,
+      "discarded_region_tets": 0,
+      "tetgen_added_point_count": 0,
+      "region_filter": "FrontGeometry.contains: residual oriented winding near 1; holes near 0 discarded",
+      "plc_triangles_preserved": true,
+      "worker_seconds": 0.00437670000246726,
+      "backend": "cpu_tetgen",
+      "method": "CPU constrained-Delaunay residual-cavity completion",
+      "gpu": false,
+      "pure_aft": false,
+      "original_global_points": 72,
+      "input_cavity_points": 8,
+      "input_front_faces": 8,
+      "new_tet_count": 2,
+      "new_point_count": 0,
+      "cavity_volume": 1.7169948268412616e-06,
+      "new_tet_volume": 1.7169948268412017e-06,
+      "relative_volume_error": 3.4902598471126395e-14,
+      "boundary_exact": true,
+      "global_prefix_unchanged": true,
+      "wall_seconds": 0.7550573000044096,
+      "logs": "parsing switches\nsuccess",
+      "validation_scope": "Residual PLC and boundary checked; caller must validate union with existing tets"
+    },
+    "rolled_back_aft_tets": 0,
+    "rolled_back_aft_indices": [],
+    "aft_volume_fraction": 0.999998271945625,
+    "completion_volume_fraction": 1.7280543750386457e-06,
+    "generation_tet_count": 233,
+    "optimization": {
+      "method": "fixed-boundary interior-vertex mean-ratio pattern search",
+      "before": {
+        "min": 5.074430830279755e-05,
+        "p05": 0.0003920802253256469,
+        "median": 0.07112742451351918
+      },
+      "after": {
+        "min": 0.00027931251731180357,
+        "p05": 0.0018371018671341265,
+        "median": 0.05011586953293216
+      },
+      "moves": 184,
+      "moved_vertex_count": 38,
+      "iterations": 8,
+      "moves_per_sweep": [
+        22,
+        17,
+        19,
+        15,
+        25,
+        28,
+        26,
+        32
+      ],
+      "interior_vertex_count": 48,
+      "fixed_boundary_vertex_count": 24,
+      "unused_vertex_count": 0,
+      "evaluated_candidates": 3827,
+      "backend": "cuda",
+      "backend_stats": {
+        "backend": "cuda",
+        "device_info": {
+          "backend": "cupy RawModule / NVRTC",
+          "device": "NVIDIA GeForce GTX 1660 Ti",
+          "device_id": 0,
+          "compute_capability": "7.5",
+          "total_memory_bytes": 6442123264,
+          "free_memory_bytes_at_init": 5379194880,
+          "cupy_version": "13.6.0",
+          "cuda_runtime_version": 12090,
+          "cuda_driver_version": 13020
+        },
+        "fallback_reason": null,
+        "timings_seconds": {
+          "evaluate": 0.15230060000612866
+        },
+        "calls": {
+          "evaluate": 386
+        },
+        "kernel_calls": {
+          "evaluate_tets": 386
+        }
+      },
+      "kernel_counts": {
+        "evaluate_tets": 386
+      },
+      "rollback_reason": null,
+      "seconds": 0.39289620000636205,
+      "guarantee_scope": "accepted moves preserve positive incident volumes and improve their minimum mean ratio; no guarantee of eliminating all slivers"
+    },
+    "topology_optimization": {
+      "method": "fixed-vertex 2-to-3 / 3-to-2 quality flips",
+      "before": {
+        "min": 0.0002793125173118119,
+        "p05": 0.0018371018671341267,
+        "median": 0.05011586953293216
+      },
+      "after": {
+        "min": 0.0005348687446027517,
+        "p05": 0.00497827074043539,
+        "median": 0.05438891188013764
+      },
+      "initial_tet_count": 233,
+      "final_tet_count": 246,
+      "accepted_flips": 89,
+      "flips": {
+        "2_to_3": 51,
+        "3_to_2": 38
+      },
+      "attempts": {
+        "2_to_3": 13983,
+        "3_to_2": 1078
+      },
+      "rejections": {
+        "patch_boundary_changed": 11754,
+        "no_quality_gain": 2898,
+        "degenerate_new_tet": 320
+      },
+      "max_passes": 3,
+      "passes_completed": 1,
+      "moves_per_pass": [
+        89
+      ],
+      "acceptance_limits": {
+        "per_pass": 128,
+        "total": 384
+      },
+      "min_gain": 1e-08,
+      "boundary_preserved": true,
+      "stop_reason": "no_improving_flip",
+      "rollback_reason": null,
+      "seconds": 10.008399199999985,
+      "limitations": [
+        "local minimum-quality improvement; not all slivers can be removed",
+        "float64 tolerance predicates; validate initial and final meshes independently"
+      ]
+    },
+    "final_tet_count": 246
+  },
+  "validation": {
+    "valid": true,
+    "errors": [],
+    "vertex_count": 72,
+    "tet_count": 246,
+    "boundary_face_count": 44,
+    "extracted_boundary_face_count": 44,
+    "checked_pairs": 8283,
+    "certified_pairs": 8230,
+    "total_pairs": 30135,
+    "lp_calls": 53,
+    "overlap_count": 0,
+    "overlap_pairs": [],
+    "nonconforming_contact_count": 0,
+    "nonconforming_contact_pairs": [],
+    "intersection_failure_count": 0,
+    "intersection_failures": [],
+    "geometric_intersections_checked": true,
+    "numerical_validation": true,
+    "validation_note": "Floating-point, tolerance-based validation; not an exact-arithmetic proof. Geometric pair details are capped at 50; counts are exhaustive.",
+    "tolerances": {
+      "volume": 6.4e-11,
+      "coordinate": 4e-10,
+      "barycentric": 1e-08,
+      "relative_volume": 1e-07
+    },
+    "positive_tet_count": 246,
+    "inverted_tet_count": 0,
+    "degenerate_tet_count": 0,
+    "min_signed_volume": 3.984747318273429e-07,
+    "signed_volume_sum": 0.9936000000000001,
+    "positive_volume_min": 3.984747318273429e-07,
+    "positive_volume_sum": 0.9936000000000001,
+    "duplicate_tet_count": 0,
+    "internal_face_count": 470,
+    "nonmanifold_face_count": 0,
+    "internal_orientation_error_count": 0,
+    "face_manifold": true,
+    "internal_faces_oppositely_oriented": true,
+    "boundary_faces_match": true,
+    "missing_boundary_face_count": 0,
+    "extra_boundary_face_count": 0,
+    "missing_boundary_faces": [],
+    "extra_boundary_faces": [],
+    "duplicate_boundary_face_count": 0,
+    "boundary_orientation_error_count": 0,
+    "boundary_edge_error_count": 0,
+    "boundary_closed_oriented": true,
+    "signed_boundary_volume": 0.9936000000000003,
+    "relative_volume_error": 1.1173742196307934e-16,
+    "unused_vertex_count": 0,
+    "unused_vertex_indices": [],
+    "quality": {
+      "metric": "mean_ratio: 12*(3*abs(volume))^(2/3)/sum(squared_edge_lengths)",
+      "ideal": 1.0,
+      "min": 0.0005348687446027512,
+      "p05": 0.00497827074043539,
+      "median": 0.054388911880137614
+    },
+    "validation_seconds": 1.5922742000038852
+  }
+}

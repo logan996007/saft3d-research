@@ -1,0 +1,578 @@
+{
+  "hardware": {
+    "cpu": "Intel Core i5-9300H, 4 cores / 8 threads",
+    "gpu": "NVIDIA GeForce GTX 1660 Ti, 6 GiB",
+    "driver": "596.21"
+  },
+  "general_global_aft": {
+    "cube-small": {
+      "output_tets": 12,
+      "generation_seconds": {
+        "cpu": [
+          1.043153600068763,
+          1.0093415998853743,
+          1.4278806999791414
+        ],
+        "cuda": [
+          1.444749399786815,
+          1.659082300029695,
+          2.336044600000605
+        ]
+      },
+      "cpu_over_cuda_median_ratio": 0.6287533777258019,
+      "equal_mesh": {
+        "same_boundary": true,
+        "equal_connectivity": true,
+        "matching_vertices_1e-10": true,
+        "max_coordinate_difference": 0.0
+      },
+      "median_cuda_stages": {
+        "input_checks": 0.036505799973383546,
+        "backend_initialization": 0.9636756000109017,
+        "front_snapshot": 0.0031959000043570995,
+        "front_topology": 0.012412199517711997,
+        "front_geometric_legality": 0.5670721002388746,
+        "backend_propose_local": 0.007549999514594674,
+        "backend_evaluate": 0.0062078002374619246,
+        "backend_conflicts": 0.0072742002084851265,
+        "backend_overlaps": 0.012092900462448597,
+        "remaining_host_time": 0.04291590047068894
+      }
+    },
+    "cube-medium": {
+      "output_tets": 23,
+      "generation_seconds": {
+        "cpu": [
+          5.6182281000074,
+          5.958702699979767,
+          4.972301200032234
+        ],
+        "cuda": [
+          3.1087271000724286,
+          2.4266887998674065,
+          3.0620312998071313
+        ]
+      },
+      "cpu_over_cuda_median_ratio": 1.8348042687745472,
+      "equal_mesh": {
+        "same_boundary": true,
+        "equal_connectivity": true,
+        "matching_vertices_1e-10": true,
+        "max_coordinate_difference": 0.0
+      },
+      "median_cuda_stages": {
+        "input_checks": 0.03812019992619753,
+        "backend_initialization": 0.9345072999130934,
+        "front_snapshot": 0.005447600036859512,
+        "front_topology": 0.028186504496261477,
+        "front_geometric_legality": 1.6027248967438936,
+        "backend_propose_local": 0.013488999102264643,
+        "backend_evaluate": 0.010982600273564458,
+        "backend_conflicts": 0.012491899775341153,
+        "backend_overlaps": 0.03829369996674359,
+        "remaining_host_time": 0.11475629894994199
+      }
+    },
+    "hollow-large": {
+      "output_tets": 201,
+      "generation_seconds": {
+        "cpu": [
+          41.55672460002825,
+          48.41348049999215,
+          49.82347030006349
+        ],
+        "cuda": [
+          10.266197700053453,
+          10.978152999887243,
+          11.901340499985963
+        ]
+      },
+      "cpu_over_cuda_median_ratio": 4.409984129433194,
+      "equal_mesh": {
+        "same_boundary": true,
+        "equal_connectivity": true,
+        "matching_vertices_1e-10": true,
+        "max_coordinate_difference": 0.0
+      },
+      "median_cuda_stages": {
+        "input_checks": 0.06420730007812381,
+        "backend_initialization": 0.9083699998445809,
+        "front_snapshot": 0.01938950060866773,
+        "front_topology": 0.4509763971436769,
+        "front_geometric_legality": 8.642382987309247,
+        "backend_propose_local": 0.029120800085365772,
+        "backend_evaluate": 0.027349700685590506,
+        "backend_conflicts": 0.02550009940750897,
+        "backend_overlaps": 0.19882170017808676,
+        "remaining_host_time": 0.6399658147711307
+      }
+    }
+  },
+  "direct_extrusion": [
+    {
+      "tetrahedra": 1152,
+      "identical_arrays": true,
+      "cpu": {
+        "warm_seconds": [
+          0.15157450013794005,
+          0.17489110003225505,
+          0.18086090008728206
+        ],
+        "cold_seconds": 0.17622800008393824,
+        "peak_worker_rss_bytes": 62967808,
+        "host_mesh_bytes": 55416,
+        "points": 325,
+        "min_mean_ratio": 0.3529411764705883,
+        "sha256": {
+          "points": "e289ac5e27ca2deb09cf09dff2c8151eadb312b5b0cb0d95153b43759437bd4d",
+          "cells": "2490d59716a199567e0a8c32f539e33cadfeb356570b0ca18c4b6260f89a67f1",
+          "boundary": "45e497f3f4985568726d8fe7e8c926f7f358d32957d52f13664f2796cb9f5477"
+        },
+        "check_seconds": [
+          0.0020947998855262995,
+          0.003186100162565708,
+          0.0021361999679356813
+        ]
+      },
+      "cuda": {
+        "warm_seconds": [
+          0.1596001998987049,
+          0.17681300011463463,
+          0.15171599993482232
+        ],
+        "cold_seconds": 1.0949270999990404,
+        "peak_worker_rss_bytes": 247377920,
+        "host_mesh_bytes": 55416,
+        "points": 325,
+        "min_mean_ratio": 0.35294117647058826,
+        "sha256": {
+          "points": "e289ac5e27ca2deb09cf09dff2c8151eadb312b5b0cb0d95153b43759437bd4d",
+          "cells": "2490d59716a199567e0a8c32f539e33cadfeb356570b0ca18c4b6260f89a67f1",
+          "boundary": "45e497f3f4985568726d8fe7e8c926f7f358d32957d52f13664f2796cb9f5477"
+        },
+        "check_seconds": [
+          0.00279330019839108,
+          0.0024974001571536064,
+          0.0021782000549137592
+        ]
+      },
+      "speedup": 1.0958075249483084
+    },
+    {
+      "tetrahedra": 9216,
+      "identical_arrays": true,
+      "cpu": {
+        "warm_seconds": [
+          0.19436559989117086,
+          0.15754289994947612,
+          0.1469912000466138
+        ],
+        "cold_seconds": 0.20798419998027384,
+        "peak_worker_rss_bytes": 65380352,
+        "host_mesh_bytes": 386520,
+        "points": 2025,
+        "min_mean_ratio": 0.3529411764705883,
+        "sha256": {
+          "points": "0f512ef5aeb42e6b63007af385bfc9c033b5c83bcc3a204332fab3f8fe91b108",
+          "cells": "6b0dd7f9e062999902dba1c4baf499e149086547aa0892590429c937a5a880af",
+          "boundary": "1dfd72d4ca8d594c5a575cd8bb056281c605831ecefde1a6da48e1b776e4c84f"
+        },
+        "check_seconds": [
+          0.0045421000104397535,
+          0.00441840011626482,
+          0.004426199942827225
+        ]
+      },
+      "cuda": {
+        "warm_seconds": [
+          0.15121500007808208,
+          0.22099930001422763,
+          0.18874030001461506
+        ],
+        "cold_seconds": 1.0937451999634504,
+        "peak_worker_rss_bytes": 248119296,
+        "host_mesh_bytes": 386520,
+        "points": 2025,
+        "min_mean_ratio": 0.3529411764705883,
+        "sha256": {
+          "points": "0f512ef5aeb42e6b63007af385bfc9c033b5c83bcc3a204332fab3f8fe91b108",
+          "cells": "6b0dd7f9e062999902dba1c4baf499e149086547aa0892590429c937a5a880af",
+          "boundary": "1dfd72d4ca8d594c5a575cd8bb056281c605831ecefde1a6da48e1b776e4c84f"
+        },
+        "check_seconds": [
+          0.004710599780082703,
+          0.006837600143626332,
+          0.007303499849513173
+        ]
+      },
+      "speedup": 0.8347072667431218
+    },
+    {
+      "tetrahedra": 73728,
+      "identical_arrays": true,
+      "cpu": {
+        "warm_seconds": [
+          0.23569949995726347,
+          0.211632699938491,
+          0.18162499996833503
+        ],
+        "cold_seconds": 0.21230789995752275,
+        "peak_worker_rss_bytes": 85049344,
+        "host_mesh_bytes": 2871192,
+        "points": 14161,
+        "min_mean_ratio": 0.3529411764705883,
+        "sha256": {
+          "points": "3ad9c8b5bc112f3daa2716ac88e9dbb9f2156cc1cfe01cdd92a31f6a8e7701f7",
+          "cells": "e984b2ef9400e1e36f88f981482184a683879d56b9bb5d6435e1926f1e22b66f",
+          "boundary": "40ee132edc9e732eef21a3cefd35b54ccf28a1b2a85f688d4e559f272ff6e12e"
+        },
+        "check_seconds": [
+          0.01700190012343228,
+          0.016946500167250633,
+          0.017107400111854076
+        ]
+      },
+      "cuda": {
+        "warm_seconds": [
+          0.16730899992398918,
+          0.16683000000193715,
+          0.19048950006254017
+        ],
+        "cold_seconds": 1.0776849000249058,
+        "peak_worker_rss_bytes": 251047936,
+        "host_mesh_bytes": 2871192,
+        "points": 14161,
+        "min_mean_ratio": 0.35294117647058837,
+        "sha256": {
+          "points": "3ad9c8b5bc112f3daa2716ac88e9dbb9f2156cc1cfe01cdd92a31f6a8e7701f7",
+          "cells": "e984b2ef9400e1e36f88f981482184a683879d56b9bb5d6435e1926f1e22b66f",
+          "boundary": "40ee132edc9e732eef21a3cefd35b54ccf28a1b2a85f688d4e559f272ff6e12e"
+        },
+        "check_seconds": [
+          0.01707689999602735,
+          0.022964500123634934,
+          0.017791299847885966
+        ]
+      },
+      "speedup": 1.2649211939264395
+    },
+    {
+      "tetrahedra": 589824,
+      "identical_arrays": true,
+      "cpu": {
+        "warm_seconds": [
+          0.385024500079453,
+          0.44083939981646836,
+          0.40286339982412755
+        ],
+        "cold_seconds": 0.4124718999955803,
+        "peak_worker_rss_bytes": 121020416,
+        "host_mesh_bytes": 22097688,
+        "points": 105633,
+        "min_mean_ratio": 0.35294117647058837,
+        "sha256": {
+          "points": "f58233bbcabc44eb32f354a5ce62cd02b00ee693c2d026f473b8048ff9a6f031",
+          "cells": "3fcca12f24533a7b21ba33f33a7bd88fd5c5cc83eda912255ccdb27dd46e33fc",
+          "boundary": "8b535e8cffd421a908de167a6f833b4af88bd235d6a9036bfeec9cd0c6cea4b2"
+        },
+        "check_seconds": [
+          0.09507659985683858,
+          0.09556469996459782,
+          0.10606860020197928
+        ]
+      },
+      "cuda": {
+        "warm_seconds": [
+          0.22263049986213446,
+          0.19955330016091466,
+          0.1930774999782443
+        ],
+        "cold_seconds": 1.2153662000782788,
+        "peak_worker_rss_bytes": 277393408,
+        "host_mesh_bytes": 22097688,
+        "points": 105633,
+        "min_mean_ratio": 0.35294117647058837,
+        "sha256": {
+          "points": "f58233bbcabc44eb32f354a5ce62cd02b00ee693c2d026f473b8048ff9a6f031",
+          "cells": "3fcca12f24533a7b21ba33f33a7bd88fd5c5cc83eda912255ccdb27dd46e33fc",
+          "boundary": "8b535e8cffd421a908de167a6f833b4af88bd235d6a9036bfeec9cd0c6cea4b2"
+        },
+        "check_seconds": [
+          0.10504080005921423,
+          0.10613900003954768,
+          0.09416330000385642
+        ]
+      },
+      "speedup": 2.018826045468899
+    },
+    {
+      "tetrahedra": 4718592,
+      "identical_arrays": true,
+      "cpu": {
+        "warm_seconds": [
+          2.343120199861005,
+          2.2144756000488997,
+          2.960440899943933
+        ],
+        "cold_seconds": 2.7506556001026183,
+        "peak_worker_rss_bytes": 277848064,
+        "host_mesh_bytes": 173317656,
+        "points": 815425,
+        "min_mean_ratio": 0.35294117647058837,
+        "sha256": {
+          "points": "b2934fbcb2933db47e2e1ab549548128cf505256a3bfc99c8af8e5de3cc6725d",
+          "cells": "9d17a826ee7d41f2573d9ab1227b8e6cdc22427afc5cd7b80ae3c7b7a40cca2a",
+          "boundary": "57ec6523075b14cfb33635601b3944c800cbad7242b251947b0d681ed921bc79"
+        },
+        "check_seconds": [
+          0.7839722000062466,
+          0.7911616000346839,
+          0.9711559000425041
+        ]
+      },
+      "cuda": {
+        "warm_seconds": [
+          0.24664050014689565,
+          0.2451476000715047,
+          0.2888283000793308
+        ],
+        "cold_seconds": 1.176509500015527,
+        "peak_worker_rss_bytes": 476758016,
+        "host_mesh_bytes": 173317656,
+        "points": 815425,
+        "min_mean_ratio": 0.35294117647058837,
+        "sha256": {
+          "points": "b2934fbcb2933db47e2e1ab549548128cf505256a3bfc99c8af8e5de3cc6725d",
+          "cells": "9d17a826ee7d41f2573d9ab1227b8e6cdc22427afc5cd7b80ae3c7b7a40cca2a",
+          "boundary": "57ec6523075b14cfb33635601b3944c800cbad7242b251947b0d681ed921bc79"
+        },
+        "check_seconds": [
+          0.7150154998525977,
+          0.6981828999705613,
+          0.7623008999507874
+        ]
+      },
+      "speedup": 9.5001437252417
+    },
+    {
+      "tetrahedra": 37748736,
+      "identical_arrays": true,
+      "cpu": {
+        "warm_seconds": [
+          18.798268200131133
+        ],
+        "cold_seconds": 21.37865879992023,
+        "peak_worker_rss_bytes": 1518743552,
+        "host_mesh_bytes": 1372732440,
+        "points": 6406785,
+        "min_mean_ratio": 0.35294117647058837,
+        "sha256": {
+          "points": "ecea6b2023a35dac5b3ad9e902b957481188130a831db6ce0d22922baa3cd47f",
+          "cells": "6e9ae20417d6a64fd1650e92e7ce6535f81709e733c4160b92701ebc93738260",
+          "boundary": "7a4b0eebcd5a513b88e08ce070107e417bdbc2e5d46eda85de11421ea5fbde5a"
+        },
+        "check_seconds": [
+          6.466860699933022
+        ]
+      },
+      "cuda": {
+        "warm_seconds": [
+          0.9966702000238001
+        ],
+        "cold_seconds": 2.4068485000170767,
+        "peak_worker_rss_bytes": 2016190464,
+        "host_mesh_bytes": 1372732440,
+        "points": 6406785,
+        "min_mean_ratio": 0.35294117647058837,
+        "sha256": {
+          "points": "ecea6b2023a35dac5b3ad9e902b957481188130a831db6ce0d22922baa3cd47f",
+          "cells": "6e9ae20417d6a64fd1650e92e7ce6535f81709e733c4160b92701ebc93738260",
+          "boundary": "7a4b0eebcd5a513b88e08ce070107e417bdbc2e5d46eda85de11421ea5fbde5a"
+        },
+        "check_seconds": [
+          7.587998299859464
+        ]
+      },
+      "speedup": 18.86107179655039
+    }
+  ],
+  "native_cpu_tetgen": [
+    {
+      "case": "u_1k",
+      "repeats": 3,
+      "tetrahedra_range": [
+        1123,
+        1123
+      ],
+      "generation_seconds_median": 0.011938799871131778,
+      "seconds_range": [
+        0.011491100070998073,
+        0.01290609990246594
+      ],
+      "throughput_median": 94063.05592871468,
+      "peak_process_working_set_bytes": 36433920,
+      "min_mean_ratio": 0.17047735594690797,
+      "median_mean_ratio": 0.8378515139959974,
+      "boundary_triangles": 500,
+      "volume": 7.0
+    },
+    {
+      "case": "u_9k",
+      "repeats": 3,
+      "tetrahedra_range": [
+        9192,
+        9192
+      ],
+      "generation_seconds_median": 0.10070320009253919,
+      "seconds_range": [
+        0.08668099995702505,
+        0.10300010000355542
+      ],
+      "throughput_median": 91278.13209067036,
+      "peak_process_working_set_bytes": 38498304,
+      "min_mean_ratio": 0.11846823297225541,
+      "median_mean_ratio": 0.8828955051594282,
+      "boundary_triangles": 2206,
+      "volume": 7.0
+    },
+    {
+      "case": "u_74k",
+      "repeats": 3,
+      "tetrahedra_range": [
+        77049,
+        77049
+      ],
+      "generation_seconds_median": 1.0443920001853257,
+      "seconds_range": [
+        1.0406378000043333,
+        1.1192916000727564
+      ],
+      "throughput_median": 73774.02353362317,
+      "peak_process_working_set_bytes": 52948992,
+      "min_mean_ratio": 0.10152548219793323,
+      "median_mean_ratio": 0.8915973680810211,
+      "boundary_triangles": 9172,
+      "volume": 7.0
+    },
+    {
+      "case": "u_590k",
+      "repeats": 3,
+      "tetrahedra_range": [
+        608449,
+        608449
+      ],
+      "generation_seconds_median": 10.556761799845845,
+      "seconds_range": [
+        10.119327099993825,
+        12.487204500008374
+      ],
+      "throughput_median": 57635.95044920734,
+      "peak_process_working_set_bytes": 152858624,
+      "min_mean_ratio": 0.0993729758451079,
+      "median_mean_ratio": 0.897856735951279,
+      "boundary_triangles": 36620,
+      "volume": 7.0
+    },
+    {
+      "case": "u_1m",
+      "repeats": 3,
+      "tetrahedra_range": [
+        1039245,
+        1039245
+      ],
+      "generation_seconds_median": 20.749205299885944,
+      "seconds_range": [
+        20.198555699782446,
+        22.107839999953285
+      ],
+      "throughput_median": 50086.01461983282,
+      "peak_process_working_set_bytes": 229588992,
+      "min_mean_ratio": 0.10107307249355513,
+      "median_mean_ratio": 0.8987300271944866,
+      "boundary_triangles": 52130,
+      "volume": 7.0
+    },
+    {
+      "case": "u_4m7",
+      "repeats": 1,
+      "tetrahedra_range": [
+        4878630,
+        4878630
+      ],
+      "generation_seconds_median": 99.09787419997156,
+      "seconds_range": [
+        99.09787419997156,
+        99.09787419997156
+      ],
+      "throughput_median": 49230.420323198014,
+      "peak_process_working_set_bytes": 880623616,
+      "min_mean_ratio": 0.09172676149745597,
+      "median_mean_ratio": 0.9005686272417719,
+      "boundary_triangles": 145540,
+      "volume": 6.999999999999999
+    },
+    {
+      "case": "cube_frozen",
+      "repeats": 3,
+      "tetrahedra_range": [
+        12,
+        12
+      ],
+      "generation_seconds_median": 0.0012070999946445227,
+      "seconds_range": [
+        0.0010054998565465212,
+        0.001378699904307723
+      ],
+      "throughput_median": 9941.181387821864,
+      "peak_process_working_set_bytes": 35651584,
+      "min_mean_ratio": 0.750735986080495,
+      "median_mean_ratio": 0.7618161878680769,
+      "boundary_triangles": 12,
+      "volume": 8.0
+    },
+    {
+      "case": "hollow_frozen",
+      "repeats": 3,
+      "tetrahedra_range": [
+        36,
+        36
+      ],
+      "generation_seconds_median": 0.001864899881184101,
+      "seconds_range": [
+        0.0016588999424129725,
+        0.0025037999730557203
+      ],
+      "throughput_median": 19303.985357724476,
+      "peak_process_working_set_bytes": 35561472,
+      "min_mean_ratio": 0.327357454119644,
+      "median_mean_ratio": 0.4789433952459706,
+      "boundary_triangles": 24,
+      "volume": 7.4879999999999995
+    }
+  ],
+  "global_sphere_stress": {
+    "output_tets": 571,
+    "input_faces": 128,
+    "generation_s": 27.260759599972516,
+    "aft_tets": 481,
+    "cpu_completion_tets": 90,
+    "aft_volume_fraction": 0.7929586530574619
+  },
+  "u_prism_local_aft": {
+    "cpu": {
+      "generation_s": 66.59507480007596,
+      "free_dofs": 3078,
+      "exact_seed_tetrahedra": true,
+      "valid": true,
+      "tets_per_s": 52.976890717389445
+    },
+    "cuda": {
+      "generation_s": 83.03344899998046,
+      "free_dofs": 3078,
+      "exact_seed_tetrahedra": true,
+      "valid": true,
+      "tets_per_s": 42.48890106926463
+    },
+    "single_run_cpu_over_cuda": 0.8020270818822861
+  }
+}

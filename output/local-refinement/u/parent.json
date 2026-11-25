@@ -1,0 +1,356 @@
+{
+  "algorithm": "3D SAFT-inspired local AFT with explicit CPU constrained cavity completion",
+  "config": {
+    "backend": "cuda",
+    "size": 1.0,
+    "batch_size": 32,
+    "candidate_vertices": 30,
+    "min_quality": 0.0001,
+    "new_vertex_min_quality": 0.12,
+    "max_new_vertices": 3,
+    "max_iterations": 2000,
+    "max_tets": 10000,
+    "tolerance": 1e-10,
+    "completion": "tetgen",
+    "completion_timeout": 60.0,
+    "max_completion_rollback": 32
+  },
+  "backend": "cuda",
+  "device": {
+    "backend": "cupy RawModule / NVRTC",
+    "device": "NVIDIA GeForce GTX 1660 Ti",
+    "device_id": 0,
+    "compute_capability": "7.5",
+    "total_memory_bytes": 6442123264,
+    "free_memory_bytes_at_init": 5383389184,
+    "cupy_version": "13.6.0",
+    "cuda_runtime_version": 12090,
+    "cuda_driver_version": 13020
+  },
+  "backend_stats": {
+    "backend": "cuda",
+    "device_info": {
+      "backend": "cupy RawModule / NVRTC",
+      "device": "NVIDIA GeForce GTX 1660 Ti",
+      "device_id": 0,
+      "compute_capability": "7.5",
+      "total_memory_bytes": 6442123264,
+      "free_memory_bytes_at_init": 5383389184,
+      "cupy_version": "13.6.0",
+      "cuda_runtime_version": 12090,
+      "cuda_driver_version": 13020
+    },
+    "fallback_reason": null,
+    "timings_seconds": {
+      "propose_local": 0.020026600221171975,
+      "evaluate": 0.01934700063429773,
+      "conflicts": 0.01872349949553609,
+      "overlaps": 0.10391379962675273
+    },
+    "calls": {
+      "propose_local": 29,
+      "evaluate": 29,
+      "conflicts": 28,
+      "overlaps": 28
+    },
+    "kernel_calls": {
+      "propose_local_tets": 29,
+      "evaluate_tets": 29,
+      "aabb_conflicts": 28,
+      "tet_overlaps": 28
+    }
+  },
+  "initial_volume": 6.9999999999999964,
+  "face_size_field": "bending_size",
+  "sampled_physical_sizes": [
+    0.48764339754168334,
+    0.999995096323759
+  ],
+  "iterations": 28,
+  "proposals": 14225,
+  "new_vertices": 3,
+  "growth_tets": 78,
+  "closure_tets": 8,
+  "remaining_front_faces": 0,
+  "aft_stop_reason": "no_legal_candidate",
+  "meshing_seconds": 8.91442310018465,
+  "history": [
+    {
+      "iteration": 0,
+      "front_faces": 74,
+      "proposals": 787,
+      "winners": 32,
+      "accepted": 3,
+      "new_vertices": 2
+    },
+    {
+      "iteration": 1,
+      "front_faces": 78,
+      "proposals": 867,
+      "winners": 32,
+      "accepted": 3,
+      "new_vertices": 3
+    },
+    {
+      "iteration": 2,
+      "front_faces": 84,
+      "proposals": 706,
+      "winners": 32,
+      "accepted": 4,
+      "new_vertices": 3
+    },
+    {
+      "iteration": 3,
+      "front_faces": 84,
+      "proposals": 733,
+      "winners": 32,
+      "accepted": 2,
+      "new_vertices": 3
+    },
+    {
+      "iteration": 4,
+      "front_faces": 84,
+      "proposals": 740,
+      "winners": 32,
+      "accepted": 3,
+      "new_vertices": 3
+    },
+    {
+      "iteration": 5,
+      "front_faces": 86,
+      "proposals": 767,
+      "winners": 32,
+      "accepted": 4,
+      "new_vertices": 3
+    },
+    {
+      "iteration": 6,
+      "front_faces": 84,
+      "proposals": 802,
+      "winners": 32,
+      "accepted": 3,
+      "new_vertices": 3
+    },
+    {
+      "iteration": 7,
+      "front_faces": 90,
+      "proposals": 814,
+      "winners": 32,
+      "accepted": 4,
+      "new_vertices": 3
+    },
+    {
+      "iteration": 8,
+      "front_faces": 86,
+      "proposals": 801,
+      "winners": 32,
+      "accepted": 4,
+      "new_vertices": 3
+    },
+    {
+      "iteration": 9,
+      "front_faces": 82,
+      "proposals": 701,
+      "winners": 32,
+      "accepted": 4,
+      "new_vertices": 3
+    },
+    {
+      "iteration": 10,
+      "front_faces": 78,
+      "proposals": 624,
+      "winners": 32,
+      "accepted": 4,
+      "new_vertices": 3
+    },
+    {
+      "iteration": 11,
+      "front_faces": 80,
+      "proposals": 580,
+      "winners": 32,
+      "accepted": 3,
+      "new_vertices": 3
+    },
+    {
+      "iteration": 12,
+      "front_faces": 76,
+      "proposals": 538,
+      "winners": 32,
+      "accepted": 3,
+      "new_vertices": 3
+    },
+    {
+      "iteration": 13,
+      "front_faces": 66,
+      "proposals": 541,
+      "winners": 32,
+      "accepted": 4,
+      "new_vertices": 3
+    },
+    {
+      "iteration": 14,
+      "front_faces": 66,
+      "proposals": 442,
+      "winners": 31,
+      "accepted": 2,
+      "new_vertices": 3
+    },
+    {
+      "iteration": 15,
+      "front_faces": 64,
+      "proposals": 430,
+      "winners": 31,
+      "accepted": 3,
+      "new_vertices": 3
+    },
+    {
+      "iteration": 16,
+      "front_faces": 60,
+      "proposals": 433,
+      "winners": 30,
+      "accepted": 2,
+      "new_vertices": 3
+    },
+    {
+      "iteration": 17,
+      "front_faces": 54,
+      "proposals": 440,
+      "winners": 30,
+      "accepted": 3,
+      "new_vertices": 3
+    },
+    {
+      "iteration": 18,
+      "front_faces": 48,
+      "proposals": 400,
+      "winners": 29,
+      "accepted": 3,
+      "new_vertices": 3
+    },
+    {
+      "iteration": 19,
+      "front_faces": 40,
+      "proposals": 389,
+      "winners": 29,
+      "accepted": 4,
+      "new_vertices": 3
+    },
+    {
+      "iteration": 20,
+      "front_faces": 36,
+      "proposals": 350,
+      "winners": 29,
+      "accepted": 2,
+      "new_vertices": 3
+    },
+    {
+      "iteration": 21,
+      "front_faces": 30,
+      "proposals": 307,
+      "winners": 29,
+      "accepted": 2,
+      "new_vertices": 3
+    },
+    {
+      "iteration": 22,
+      "front_faces": 32,
+      "proposals": 273,
+      "winners": 26,
+      "accepted": 2,
+      "new_vertices": 3
+    },
+    {
+      "iteration": 23,
+      "front_faces": 26,
+      "proposals": 275,
+      "winners": 26,
+      "accepted": 2,
+      "new_vertices": 3
+    },
+    {
+      "iteration": 24,
+      "front_faces": 24,
+      "proposals": 174,
+      "winners": 18,
+      "accepted": 1,
+      "new_vertices": 3
+    },
+    {
+      "iteration": 25,
+      "front_faces": 16,
+      "proposals": 145,
+      "winners": 16,
+      "accepted": 2,
+      "new_vertices": 3
+    },
+    {
+      "iteration": 26,
+      "front_faces": 12,
+      "proposals": 87,
+      "winners": 8,
+      "accepted": 1,
+      "new_vertices": 3
+    },
+    {
+      "iteration": 27,
+      "front_faces": 8,
+      "proposals": 61,
+      "winners": 4,
+      "accepted": 1,
+      "new_vertices": 3
+    }
+  ],
+  "legality_stats": {
+    "calls": 939,
+    "contains_calls": 939,
+    "pair_checks": 22261,
+    "lp_calls": 1394,
+    "rejections": 155
+  },
+  "limitations": [
+    "local AFT may stall; explicit bounded rollback expands CPU-completed residual cavities",
+    "float64 geometry with independent LP checks, not exact predicates",
+    "size is a local heuristic and boundary is fixed"
+  ],
+  "completion_attempts": [
+    {
+      "rolled_back_tets": 0,
+      "retained_aft_tets": 78,
+      "rolled_back_tet_indices": [],
+      "front_faces": 8,
+      "status": "completed"
+    }
+  ],
+  "provisional_aft_tets": 78,
+  "cpu_completion": {
+    "tetgen_version": "0.8.4",
+    "switches": "pYYJMQzO0S9922",
+    "tetgen_raw_tet_count": 8,
+    "discarded_region_tets": 0,
+    "tetgen_added_point_count": 1,
+    "region_filter": "FrontGeometry.contains: residual oriented winding near 1; holes near 0 discarded",
+    "plc_triangles_preserved": true,
+    "worker_seconds": 0.0046675000339746475,
+    "backend": "cpu_tetgen",
+    "method": "CPU constrained-Delaunay residual-cavity completion",
+    "gpu": false,
+    "pure_aft": false,
+    "original_global_points": 39,
+    "input_cavity_points": 6,
+    "input_front_faces": 8,
+    "new_tet_count": 8,
+    "new_point_count": 1,
+    "cavity_volume": 0.22744289057706996,
+    "new_tet_volume": 0.22744289057707,
+    "relative_volume_error": 2.0593096461506102e-16,
+    "boundary_exact": true,
+    "global_prefix_unchanged": true,
+    "wall_seconds": 0.7594711999408901,
+    "logs": "parsing switches\nsuccess",
+    "validation_scope": "Residual PLC and boundary checked; caller must validate union with existing tets"
+  },
+  "rolled_back_aft_tets": 0,
+  "rolled_back_aft_indices": [],
+  "aft_volume_fraction": 0.9675081584889905,
+  "completion_volume_fraction": 0.03249184151100948
+}

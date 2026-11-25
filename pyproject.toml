@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "saft3d-research"
+version = "0.1.0"
+description = "GPU-assisted advancing-front tetrahedral meshing with finite-element and scale benchmarks"
+readme = "README.md"
+requires-python = ">=3.10,<3.13"
+license = {file = "LICENSE"}
+dependencies = ["numpy==1.26.4","scipy==1.15.3","tetgen==0.8.4"]
+
+[project.optional-dependencies]
+cuda = ["cupy-cuda12x==13.6.0"]
+fem = ["scikit-fem==11.0.0","matplotlib==3.10.8"]
+test = ["pytest>=8,<9"]
+
+[project.scripts]
+saft3d = "saft3d.__main__:main"
+
+[tool.setuptools]
+packages = ["saft3d","fem_comparison"]
+
+[tool.setuptools.package-data]
+saft3d = ["kernels.cu"]
