@@ -6,6 +6,7 @@ from pathlib import Path
 from time import perf_counter
 import numpy as np
 from saft3d.backend import create_backend
+from saft3d.batched_prism import advance_batched_prisms
 from saft3d.thickness_front import _advance_with_local_aft
 from saft3d.validation import validate_mesh
 from .cpu_meshes import extract_boundary
@@ -46,14 +47,21 @@ def oriented_triangle_keys(f):
     return cyc[np.lexsort(cyc[:,::-1].T)]
 
 
-def verify(mesh_path,out):
+def verify(mesh_path,out,*,mode='batched',backend='cuda'):
     start=perf_counter()
     with np.load(mesh_path,allow_pickle=False) as seed:
         p=seed['vertices']; prescribed=seed['boundary_faces']
+    generation_start=perf_counter()
     cap,layers=cap_and_layers(p,prescribed)
-    engine=create_backend('cuda')
+    engine=create_backend(backend)
     # Only nodes, triangular cap and indexing/perimeter rules enter AFT.
-    actual,run=_advance_with_local_aft(p,cap,layers,'cuda')
+    if mode=='batched':
+        actual,run=advance_batched_prisms(p,cap,layers,engine)
+    elif mode=='serial':
+        actual,run=_advance_with_local_aft(p,cap,layers,engine.name)
+    else:
+        raise ValueError('select batched or serial')
+    generation_s=perf_counter()-generation_start
     real_boundary=extract_boundary(actual)
     with np.load(mesh_path,allow_pickle=False) as seed:expected=seed['tetrahedra']
     identical=np.array_equal(unordered_tet_keys(actual),unordered_tet_keys(expected))
@@ -68,10 +76,10 @@ def verify(mesh_path,out):
     if not check['valid'] or not np.isclose(check['positive_volume_sum'],7.): raise RuntimeError(check['errors'])
     report={'input':str(mesh_path),'input_sha256':hashlib.sha256(mesh_path.read_bytes()).hexdigest(),
             'aft_mesh':str(location),'aft_sha256':hashlib.sha256(location.read_bytes()).hexdigest(),
-            'device':engine.device_info,'levels':len(layers),'cap_triangles':len(cap),
+            'device':engine.device_info,'dispatch_mode':mode,'levels':len(layers),'cap_triangles':len(cap),
             'same_canonical_tets':bool(identical),'same_oriented_boundary':bool(matching_boundary),
             'tet_count':len(actual),'true_local_aft':run,'first_order_elasticity':fem,
-            'validation':check,'elapsed_s':perf_counter()-start}
+            'generation_s':generation_s,'validation':check,'elapsed_s':perf_counter()-start}
     out.write_text(json.dumps(report,indent=2),encoding='utf8')
     print(json.dumps({k:report[k] for k in ('levels','cap_triangles','tet_count','same_canonical_tets','elapsed_s')}))
     return report
@@ -80,6 +88,8 @@ def verify(mesh_path,out):
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--mesh',type=Path,required=True)
+    parser.add_argument('--mode',choices=['batched','serial'],default='batched')
+    parser.add_argument('--backend',choices=['cuda','cpu'],default='cuda')
     parser.add_argument('--out',type=Path,default=ROOT/'output/u-goal-adapt/verified-aft-seed.json')
     args=parser.parse_args()
-    verify(args.mesh,args.out)
+    verify(args.mesh,args.out,mode=args.mode,backend=args.backend)

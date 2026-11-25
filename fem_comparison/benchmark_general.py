@@ -45,6 +45,7 @@ def worker(case,backend,out):
         return call
     # This subprocess handles one measured generation; patches are local to it.
     gm._updated_front=timed('front_topology',gm._updated_front)
+    gm._front_delta=timed('front_topology',gm._front_delta)
     gm.FrontGeometry.valid_candidate=timed('front_geometric_legality',gm.FrontGeometry.valid_candidate)
     gm.FrontGeometry.__init__=timed('front_snapshot',gm.FrontGeometry.__init__)
     gm.check_surface=timed('input_checks',gm.check_surface)
@@ -91,6 +92,10 @@ def worker(case,backend,out):
     result={'status':'ok','case':case,'shape':name,'backend':backend,
             'input_vertices':len(v),'input_faces':len(f),'config':dataclasses.asdict(cfg),
             'output_vertices':len(p),'output_tets':len(c),'aft_tets':run['growth_tets'],
+            'legality_stats':run['legality_stats'],
+            'provisional_aft_tets':run.get('provisional_aft_tets',run['growth_tets']),
+            'rolled_back_aft_indices':run.get('rolled_back_aft_indices',[]),
+            'completion_attempts':run.get('completion_attempts',[]),
             'cpu_completion_tets':run['closure_tets'],'aft_volume_fraction':run.get('aft_volume_fraction',1.0),
             'front_iterations':run['iterations'],'proposals':run['proposals'],
             'device':run['device'],'kernel_calls':backend_stats['kernel_calls'],

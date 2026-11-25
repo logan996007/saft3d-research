@@ -6,15 +6,16 @@ triangulated interfaces are sent to the ordinary local AFT tetrahedralizer.
 All prism interiors are meshed independently. An optional direct sweep can
 be used as a control on the same geometry.
 """
-from collections import Counter
+from collections import Counter, defaultdict
 
 import numpy as np
 from time import perf_counter
 
-from .backend import create_backend
+from .backend import create_backend, prism_backend
 from .mesher import check_surface
 from .general_mesher import AdvancingFrontConfig,grow_general_mesh
-from .surface_validation import check_embedded_surface
+from .surface_validation import _check_vertex_links
+from scipy.spatial import cKDTree
 
 
 _ADVANCE_PRISMS = r'''
@@ -50,7 +51,9 @@ def _cap_template(vertices, faces):
     if np.any(extent<=0): raise ValueError('zero domain extent')
     normalized=(vertices-vertices.min(axis=0))/extent.max()
     check_surface(normalized,faces,1.e-10)
-    check_embedded_surface(normalized,faces)
+    _check_vertex_links(faces)
+    if len(cKDTree(normalized).query_pairs(1.e-10,output_type='ndarray')):
+        raise ValueError('surface has coincident or near-coincident nodes')
     low,high=vertices[:,2].min(),vertices[:,2].max()
     bottom_ids=np.flatnonzero(vertices[:,2]==low)
     top_ids=np.flatnonzero(vertices[:,2]==high)
@@ -73,11 +76,30 @@ def _cap_template(vertices, faces):
     if np.any(signed_areas<=0): raise ValueError('upper cap must point out of domain')
     edges=[(int(tri[i]),int(tri[(i+1)%3])) for tri in top for i in range(3)]
     multiplicity=Counter(tuple(sorted(e)) for e in edges)
+    incidence=Counter(edges)
+    if any(n>2 or (n==2 and incidence[edge]!=1) for edge,n in multiplicity.items()):
+        raise ValueError('inconsistent internal cap edge incidence')
+    if len(np.unique(top))!=len(xy):
+        raise ValueError('unused cap vertex')
+    # A non-overlapping cap times an interval is embedded. Prove that the
+    # supplied side triangles cover precisely its oriented perimeter walls.
+    from .batched_prism import _check_planar_cap
+    _check_planar_cap(normalized[bottom_ids,:2],top)
     side_edges=[e for e in edges if multiplicity[tuple(sorted(e))]==1]
     side_keys={tuple(sorted(e)) for e in side_edges}
-    side_faces=local[faces[~((fz==low).all(axis=1)|(fz==high).all(axis=1))]]
-    if any(tuple(np.unique(f)) not in side_keys for f in side_faces):
-        raise ValueError('sidewalls must be vertical on the cap perimeter')
+    walls=defaultdict(list)
+    for tri in faces[~((fz==low).all(axis=1)|(fz==high).all(axis=1))]:
+        key=tuple(np.unique(local[tri]))
+        if key not in side_keys:raise ValueError('sidewalls must be vertical on the cap perimeter')
+        walls[key].append(tuple(map(int,tri)))
+    def signature(tris):
+        return {min((a,b,c),(b,c,a),(c,a,b)) for a,b,c in tris}
+    for a,b in side_edges:
+        supplied=walls[tuple(sorted((a,b)))]
+        choices=[signature(_wall_triangles(bottom_ids[a],bottom_ids[b],matched_top[a],matched_top[b],direction))
+                 for direction in (True,False)]
+        if len(supplied)!=2 or signature(supplied) not in choices:
+            raise ValueError('sidewall must cover its rectangle with two outward triangles')
     return xy,bottom_ids,matched_top,top,side_edges,float(signed_areas.sum())
 
 
@@ -196,7 +218,7 @@ def _advance_with_local_aft(points,cap,levels,backend):
                              'timings_seconds':dict(seconds)}
 
 
-def grow_thickness_front(vertices,faces,fractions,*,backend='cuda',mode='aft',cap_refinements=0):
+def grow_thickness_front(vertices,faces,fractions,*,backend='cuda',mode='batched',cap_refinements=0):
     """Return points, oriented tets, refined boundary and run metadata.
 
     Fractions are increasing relative distances from the bottom to the top cap,
@@ -209,7 +231,7 @@ def grow_thickness_front(vertices,faces,fractions,*,backend='cuda',mode='aft',ca
     mean ratios have been evaluated using bounded batches.
     """
     start=perf_counter()
-    if mode not in ('aft','sweep'): raise ValueError('mode must be aft or sweep')
+    if mode not in ('aft','sweep','batched'): raise ValueError('mode must be batched, aft or sweep')
     vertices=np.asarray(vertices,dtype=np.float64); faces=np.asarray(faces)
     fractions=np.asarray(fractions,dtype=float)
     if (fractions.ndim!=1 or len(fractions)<2 or not np.isfinite(fractions).all()
@@ -234,7 +256,7 @@ def grow_thickness_front(vertices,faces,fractions,*,backend='cuda',mode='aft',ca
         points[ids,:2]=xy;points[ids,2]=low+height*fraction
     points[:len(vertices)]=vertices
     prepared=perf_counter()
-    engine=create_backend(backend)
+    engine=prism_backend(backend,len(cap)*intervals) if mode=='batched' else create_backend(backend)
     initialized=perf_counter()
     front_evidence={}
     if mode=='sweep':
@@ -245,7 +267,11 @@ def grow_thickness_front(vertices,faces,fractions,*,backend='cuda',mode='aft',ca
         measured=perf_counter()
         if engine.name=='cuda':cells=engine.cp.asnumpy(cells)
     else:
-        cells,front_evidence=_advance_with_local_aft(points,cap,levels,engine.name)
+        if mode == 'batched':
+            from .batched_prism import advance_batched_prisms
+            cells,front_evidence=advance_batched_prisms(points,cap,levels,backend=engine)
+        else:
+            cells,front_evidence=_advance_with_local_aft(points,cap,levels,engine.name)
         advanced=perf_counter()
         volumes,quality=engine.evaluate(points[cells])
         total_volume,min_volume,min_quality=float(volumes.sum()),float(volumes.min()),float(quality.min())
@@ -257,8 +283,10 @@ def grow_thickness_front(vertices,faces,fractions,*,backend='cuda',mode='aft',ca
     stats=engine.stats
     for name in ('kernel_calls','calls','timings_seconds'):
         total=Counter(stats[name]);total.update(front_evidence.get(name,{}));stats[name]=dict(total)
-    meta={'algorithm':('thickness-directed triangular prism partition; GPU/CPU local AFT on every prism' if mode=='aft'
-                       else 'direct staircase sweep on prescribed cap layers'),
+    methods={'batched':'batched local advancing fronts on prescribed straight prisms',
+             'aft':'serial dispatch of independent local advancing fronts on straight prisms',
+             'sweep':'direct staircase sweep on prescribed cap layers'}
+    meta={'algorithm':methods[mode],
           'mode':mode,'prism_evidence':front_evidence,
           'backend':engine.name,'device':engine.device_info,
           'backend_stats':stats,'advance_prisms_gpu_launches':intervals if engine.name=='cuda' and mode=='sweep' else 0,

@@ -1,5 +1,7 @@
 # Scale and CPU comparisons
 
+These are the measurements for revision `b923e87`. The default prism dispatch, generic front checks and validator have since been optimized. [Latest timings](optimization.md)
+
 Measured on one Intel Core i5-9300H (4 cores, 8 threads) with an NVIDIA GTX 1660 Ti (6 GiB). Times are wall-clock seconds for in-memory mesh generation. File export, independent verification and finite-element solutions are timed separately. The general AFT and the direct extrusion sweep perform different meshing operations. [Machine-readable measurements](benchmark-data.json)
 
 ## General advancing front

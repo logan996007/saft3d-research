@@ -15,6 +15,10 @@ from typing import Iterator
 
 import numpy as np
 
+# A fresh process pays CUDA context and kernel setup. Explicit CUDA selection
+# always initializes the device; this flag is only a hint for 'auto' on prisms.
+_cuda_ready = False
+
 
 def _tet_array(tets: np.ndarray) -> np.ndarray:
     """Validate and normalize the host-side batch representation."""
@@ -221,23 +225,11 @@ class CPUBackend:
         Touching on a face, edge, or vertex is allowed. ``tol`` is an absolute
         projected length tolerance in the caller's normalized coordinates.
         """
-        from .geometry import tet_overlap
+        from .batch_overlap import overlap_any
 
         with self._timed("overlaps"):
             candidates, existing = _tet_array(candidates), _tet_array(existing)
-            tol = _nonnegative(tol, "tol")
-            result = np.zeros(len(candidates), dtype=bool)
-            if not len(candidates) or not len(existing):
-                return result
-            old_lo, old_hi = existing.min(axis=1), existing.max(axis=1)
-            for i, candidate in enumerate(candidates):
-                lo, hi = candidate.min(axis=0), candidate.max(axis=0)
-                broad = np.all(np.minimum(hi, old_hi) - np.maximum(lo, old_lo) > tol, axis=1)
-                for j in np.flatnonzero(broad):
-                    if tet_overlap(candidate, existing[j], tol=tol):
-                        result[i] = True
-                        break
-            return result
+            return overlap_any(candidates, existing, _nonnegative(tol, "tol"))
 
 
 class CUDABackend(CPUBackend):
@@ -246,6 +238,7 @@ class CUDABackend(CPUBackend):
     name = "cuda"
 
     def __init__(self) -> None:
+        global _cuda_ready
         super().__init__()
         try:
             import cupy as cp
@@ -284,6 +277,7 @@ class CUDABackend(CPUBackend):
             self.timings.clear()
             self.calls.clear()
             self.kernel_calls.clear()
+            _cuda_ready = True
         except Exception as exc:
             raise RuntimeError(f"CUDA backend unavailable: {type(exc).__name__}: {exc}") from exc
 
@@ -362,6 +356,17 @@ class CUDABackend(CPUBackend):
             result = cp.empty(n, dtype=cp.uint8)
             self._launch("tet_overlaps", n, (gpu_candidates, np.int64(n), gpu_existing, np.int64(m), np.float64(tol), result))
             return cp.asnumpy(result).astype(bool)
+
+
+def prism_backend(request, prism_count):
+    """Select a backend for a batch of independent six-vertex prism fronts."""
+    if not isinstance(request,str):
+        return request
+    if request.strip().lower()=='auto' and not _cuda_ready and prism_count<200_000:
+        engine=CPUBackend()
+        engine.device_info['selection']='auto: small prism batch in a cold process'
+        return engine
+    return create_backend(request)
 
 
 def create_backend(name: str = "auto") -> CPUBackend:

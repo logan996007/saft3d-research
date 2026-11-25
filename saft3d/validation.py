@@ -14,6 +14,7 @@ from time import perf_counter
 
 import numpy as np
 from scipy.optimize import linprog
+from .pair_certificates import broad_pairs, certified as batch_certified
 
 
 _BARY_TOL = 1.0e-8
@@ -478,18 +479,12 @@ def validate_mesh(vertices, tetrahedra, boundary_faces, *, check_overlap=True):
 
     if check_overlap and len(tets) > 1:
         lows, highs = coords.min(axis=1), coords.max(axis=1)
-        for i in range(len(tets) - 1):
-            if degenerate[i]:
-                continue
-            candidates = np.flatnonzero(np.all(
-                (highs[i] + coordinate_tol >= lows[i + 1:])
-                & (highs[i + 1:] + coordinate_tol >= lows[i]), axis=1,
-            )) + i + 1
-            for j in candidates:
-                j = int(j)
-                if degenerate[j]:
-                    continue
-                report["checked_pairs"] += 1
+        for pairs in broad_pairs(lows, highs, degenerate, coordinate_tol):
+            clear = batch_certified(tets,coords,pairs,_FACE_INDEX,_CERT_MARGIN,_CERT_ROUNDOFF)
+            report["checked_pairs"] += len(pairs)
+            report["certified_pairs"] += int(clear.sum())
+            for left, right in pairs[~clear]:
+                i, j = int(left), int(right)
                 kind, calls, certified = _intersection_with_certificate(coords[i], coords[j], tets[i], tets[j])
                 report["certified_pairs"] += int(certified)
                 report["lp_calls"] += calls

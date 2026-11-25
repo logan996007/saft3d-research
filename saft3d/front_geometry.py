@@ -9,7 +9,8 @@ Triangle/tetrahedron intersection is checked independently with barycentric
 linear programs.  The predicates are tolerance based, not exact arithmetic.
 """
 
-from collections import Counter
+from itertools import combinations
+from collections import OrderedDict
 from math import fsum
 
 import numpy as np
@@ -17,11 +18,39 @@ from scipy.optimize import linprog
 
 
 _TET_FACES = ((1, 2, 3), (0, 3, 2), (0, 1, 3), (0, 2, 1))
+_FACE_ORDER = np.asarray(_TET_FACES)
+_TET_EDGES = np.asarray(list(combinations(range(4),2)))
+_RAY_PAIRS = np.asarray(list(combinations(range(7),2)))
 _LP_OPTIONS = {
     "primal_feasibility_tolerance": 1.0e-10,
     "dual_feasibility_tolerance": 1.0e-10,
     "ipm_optimality_tolerance": 1.0e-12,
 }
+
+
+class FrontContactCache:
+    """Per-run cache of tet/triangle checks for append-only vertex coordinates.
+
+    Full tet coordinates and IDs key the queries. An oriented face gets a
+    persistent token only on the same growing mesh; unchanged vertex IDs
+    always refer to the same coordinates. Cache entries never cover winding,
+    topology changes or newly introduced faces.
+    """
+    def __init__(self, max_entries=1024):
+        self.tokens={}
+        self.entries=OrderedDict()
+        self.limit=max_entries
+
+    def face_tokens(self, faces):
+        tokens=self.tokens
+        return [tokens.setdefault(tuple(map(int,f)), len(tokens)) for f in faces]
+
+    def save(self,key,seen,bad=None):
+        if len(seen)>512:return
+        entries=self.entries
+        entries[key]=(seen,bad)
+        entries.move_to_end(key)
+        if len(entries)>self.limit:entries.popitem(last=False)
 
 
 class FrontGeometry:
@@ -43,7 +72,8 @@ class FrontGeometry:
                 or np.any(numeric < 0) or np.any(numeric >= len(self.points))):
             raise ValueError("front faces contain invalid vertex indices")
         self.faces = numeric.astype(np.int64)
-        if any(len(set(map(int, face))) != 3 for face in self.faces):
+        if np.any((self.faces[:,0]==self.faces[:,1]) | (self.faces[:,1]==self.faces[:,2])
+                  | (self.faces[:,2]==self.faces[:,0])):
             raise ValueError("front triangle repeats a vertex index")
         self.triangles = self.points[self.faces]
         normals = np.cross(self.triangles[:, 1] - self.triangles[:, 0],
@@ -56,9 +86,21 @@ class FrontGeometry:
         self.normals = normals / lengths[:, None]
         self.lows = self.triangles.min(axis=1)
         self.highs = self.triangles.max(axis=1)
+        self.block_order=None
+        if len(self.faces)>=192:
+            # Spatially coherent buckets contain complete triangle AABBs,
+            # including long faces whose centroid lies far from the query.
+            centres=.5*(self.lows+self.highs)
+            axis=np.ptp(centres,axis=0).argmax()
+            self.block_order=np.argsort(centres[:,axis],kind='stable')
+            offsets=np.arange(0,len(self.faces),16)
+            self.block_lows=np.minimum.reduceat(self.lows[self.block_order],offsets,axis=0)
+            self.block_highs=np.maximum.reduceat(self.highs[self.block_order],offsets,axis=0)
+        self.contact_cache=None
         self.stats = {
             "calls": 0, "contains_calls": 0, "pair_checks": 0, "lp_calls": 0,
             "rejections": 0, "reasons": {}, "last_rejection": None,
+            "certified_pairs":0, "reused_pairs":0,
         }
 
     def _reject(self, reason, **details):
@@ -66,6 +108,19 @@ class FrontGeometry:
         self.stats["reasons"][reason] = self.stats["reasons"].get(reason, 0) + 1
         self.stats["last_rejection"] = {"reason": reason, **details}
         return False
+
+    def _nearby_faces(self,low,high):
+        """AABB broad phase retaining exactly the exhaustive scan's face order."""
+        if self.block_order is None:
+            return np.flatnonzero(np.all((high+self.tol>=self.lows)
+                                  & (self.highs+self.tol>=low),axis=1))
+        keep=np.flatnonzero(np.all((high+self.tol>=self.block_lows)
+                           & (self.block_highs+self.tol>=low),axis=1))
+        slots=(16*keep[:,None]+np.arange(16)).ravel()
+        indices=self.block_order[slots[slots<len(self.faces)]]
+        inside=np.all((high+self.tol>=self.lows[indices])
+                & (self.highs[indices]+self.tol>=low),axis=1)
+        return np.sort(indices[inside])
 
     def contains(self, point):
         """Whether a point is strictly inside the oriented remaining material.
@@ -173,6 +228,101 @@ class FrontGeometry:
             return False, "front_intersection_or_nonconforming_contact"
         return True, "shared_simplex"
 
+    def _batch_certificates(self,tet,ids,normals,anchors,indices):
+        """Resolve well-separated AABB hits; leave all uncertain geometry to LP.
+
+        The first stage applies precisely the scalar face-plane tests to a
+        whole array. Additional strict certificates use larger margins than
+        the LP feasibility tolerance and require bit-identical shared points.
+        """
+        tri=self.triangles[indices]
+        matches=self.faces[indices,:,None]==ids
+        s_tri=matches.any(axis=2);s_tet=matches.any(axis=1)
+        nshared=s_tri.sum(axis=1)
+        tol=max(self.tol,64*np.finfo(float).eps)
+        face_side=np.einsum('nkj,nj->nk',tet[None]-tri[:,:1],self.normals[indices])
+        full=nshared==3
+        wrong=full & (np.max(np.where(~s_tet,face_side,-np.inf),axis=1)>=-self.tol)
+        good=full & ~wrong
+        outside=np.einsum('nfkj,fj->nfk',tri[:,None,:,:]-anchors[None,:,None,:],normals)
+        good |= (outside>tol).all(axis=2).any(axis=1)
+        good |= np.all(np.where(s_tri[:,None,:],abs(outside)<=tol,outside>tol),axis=2).any(axis=1)
+        good |= np.all(np.where(s_tet,abs(face_side)<=tol,face_side>tol),axis=1)
+        good |= np.all(np.where(s_tet,abs(face_side)<=tol,face_side< -tol),axis=1)
+        # Unequal coordinates with a shared index are within the caller's
+        # tolerance. Only use the original narrow-phase predicates for them.
+        exact=(~matches | np.all(tri[:,:,None,:]==tet[None,None,:,:],axis=3)).all(axis=(1,2))
+        scale=np.maximum(np.ptp(tet,axis=0).max(),np.max(np.maximum(tet.max(axis=0),self.highs[indices])
+                      -np.minimum(tet.min(axis=0),self.lows[indices]),axis=1))
+        # An explicit positive clearance is deliberately larger than HiGHS'
+        # normalized tolerances. Near-coplanar cases go to the scalar fallback.
+        margin=np.maximum(16*self.tol,1.e-8*scale)
+        for shared_count in (0,1,2):
+            selected=np.flatnonzero(~good & (nshared==shared_count) & exact)
+            if not len(selected):continue
+            triangles=tri[selected]
+            if shared_count==0:
+                # Tri/tet SAT's edge-cross-edge directions can certify
+                # disjointness, where neither primitive's own face does.
+                e=triangles[:,[1,2,0]]-triangles
+                f=tet[_TET_EDGES[:,1]]-tet[_TET_EDGES[:,0]]
+                axes=np.cross(e[:,:,None,:],f[None,None,:,:]).reshape(len(e),18,3)
+                length=np.linalg.norm(axes,axis=2)
+                a=np.einsum('nkj,naj->nka',triangles-tet[0],axes)
+                b=np.einsum('kj,naj->nka',tet-tet[0],axes)
+                gaps=np.maximum(a.min(axis=1)-b.max(axis=1),b.min(axis=1)-a.max(axis=1))
+                good[selected]|=np.any(gaps>length*margin[selected,None],axis=1)
+                continue
+            tri_shared=s_tri[selected]; tet_shared=s_tet[selected]
+            rows=np.arange(len(selected))
+            common=triangles[rows,tri_shared.argmax(axis=1)]
+            dirs=np.concatenate((triangles-common[:,None],common[:,None]-tet),axis=1)
+            shared=np.column_stack((tri_shared,tet_shared))
+            axis=None
+            if shared_count==2:
+                second=triangles[rows,2-tri_shared[:,::-1].argmax(axis=1)]
+                axis=second-common
+                axis/=np.linalg.norm(axis,axis=1)[:,None]
+            normalized=dirs.copy()
+            if axis is not None:
+                normalized-=np.einsum('nkj,nj->nk',normalized,axis)[:,:,None]*axis[:,None]
+            lengths=np.linalg.norm(normalized,axis=2)
+            normalized/=np.where(lengths>0,lengths,1.)[:,:,None]
+            normalized[shared]=0.
+
+            def strict(n):
+                # Reproject after summing cone rays: cancellation can amplify
+                # roundoff along a very short shared edge. The separation
+                # plane must contain the *entire* indexed segment.
+                if axis is not None:
+                    n=n-np.einsum('nj,nj->n',n,axis)[:,None]*axis
+                length=np.linalg.norm(n,axis=1)
+                n=n/np.where(length>0,length,1.)[:,None]
+                d=np.einsum('nkj,nj->nk',dirs,n)
+                ok=np.all(np.where(shared,abs(d)<=64*np.finfo(float).eps*scale[selected,None],
+                                   d>margin[selected,None]),axis=1)
+                if axis is not None:
+                    ok &= abs(np.einsum('nj,nj->n',n,axis))<=64*np.finfo(float).eps
+                return ok
+
+            passed=strict(normalized.sum(axis=1))
+            if not passed.all():
+                if axis is None:
+                    rays=np.cross(normalized[:,_RAY_PAIRS[:,0]],normalized[:,_RAY_PAIRS[:,1]])
+                else:
+                    rays=np.cross(axis[:,None,:],normalized)
+                # Extreme rays are candidate separating directions only. The
+                # final, strict vertex-side checks are the actual certificate.
+                lengths=np.linalg.norm(rays,axis=2)
+                rays/=np.where(lengths>0,lengths,1.)[:,:,None]
+                products=normalized@rays.swapaxes(1,2)
+                signs=(products.min(axis=1)>=-1e-13).astype(float)-(products.max(axis=1)<=1e-13)
+                passed |= strict(np.einsum('nr,nrj->nj',signs,rays))
+            good[selected]|=passed
+        # Three shared vertices require the opposite tet vertex to be inward.
+        good[wrong]=False
+        return good
+
     def valid_candidate(self, tet_coords, vertex_ids):
         """Check one candidate relative to this snapshot of the unfilled domain.
 
@@ -211,7 +361,7 @@ class FrontGeometry:
         if not self.contains(tet.mean(axis=0)):
             return self._reject("centroid_outside_remaining_domain")
 
-        tetra_faces = tet[np.asarray(_TET_FACES)]
+        tetra_faces = tet[_FACE_ORDER]
         normals = np.cross(tetra_faces[:, 1] - tetra_faces[:, 0],
                            tetra_faces[:, 2] - tetra_faces[:, 0])
         lengths = np.linalg.norm(normals, axis=1)
@@ -220,13 +370,33 @@ class FrontGeometry:
         normals /= lengths[:, None]
         anchors = tetra_faces[:, 0]
         low, high = tet.min(axis=0), tet.max(axis=0)
-        nearby = np.flatnonzero(np.all(
-            (high + self.tol >= self.lows) & (self.highs + self.tol >= low), axis=1,
-        ))
-        for face_index in nearby:
+        nearby = self._nearby_faces(low,high)
+        cache=self.contact_cache
+        if cache is not None:
+            cache_key=(ids.tobytes(),tet.tobytes())
+            prior=cache.entries.get(cache_key)
+            tags=self.face_tokens
+            all_nearby=nearby
+            if prior is not None:
+                seen,bad=prior
+                if bad is not None:
+                    token,reason=bad
+                    found=next((j for j in nearby if tags[j]==token),None)
+                    if found is not None:return self._reject(reason,face_index=int(found))
+                nearby=np.fromiter((j for j in nearby if tags[j] not in seen),dtype=np.intp)
+                self.stats['reused_pairs']+=len(all_nearby)-len(nearby)
+                if not len(nearby):return True
+        certified=self._batch_certificates(tet,ids,normals,anchors,nearby)
+        self.stats["pair_checks"]+=int(certified.sum())
+        self.stats["certified_pairs"]+=int(certified.sum())
+        for face_index in nearby[~certified]:
             face_index = int(face_index)
             self.stats["pair_checks"] += 1
             allowed, reason = self._pair_is_conforming(tet, ids, normals, anchors, face_index)
             if not allowed:
+                if cache is not None and reason!='intersection_lp_failure':
+                    cache.save(cache_key,frozenset(),(tags[face_index],reason))
                 return self._reject(reason, face_index=face_index)
+        if cache is not None:
+            cache.save(cache_key,frozenset(tags[j] for j in all_nearby))
         return True

@@ -48,6 +48,25 @@ def test_invalid_caps_and_spacing():
         grow_thickness_front(v,f,[0,.5,1],backend='cpu')
 
 
+def test_default_thickness_route_actually_batches_and_checks_the_full_volume():
+    v,f,_=make_general_surface('slender_s')
+    p,t,b,report=grow_thickness_front(v,f,[0,.25,.5,1],backend='cpu')
+    assert report['mode']=='batched' and report['prism_evidence']['remaining_front_faces']==0
+    assert report['prism_evidence']['front_eligibility_tests']==45*report['prism_evidence']['prisms_meshed']
+    assert validate_mesh(p,t,b)['valid']
+
+
+def test_cold_auto_prism_route_does_not_initialize_a_device(monkeypatch):
+    import saft3d.backend as backends
+    monkeypatch.setattr(backends, '_cuda_ready', False)
+    def fail(*args,**kwargs):
+        raise AssertionError('small cold auto call initialized CUDA')
+    monkeypatch.setattr(backends,'CUDABackend',fail)
+    v,f,_=make_general_surface('slender_s')
+    _,_,_,report=grow_thickness_front(v,f,[0,1],backend='auto')
+    assert report['backend']=='cpu' and 'cold' in report['device']['selection']
+
+
 def test_actual_cuda_local_aft_and_direct_sweep_have_same_prism_partition():
     cp=pytest.importorskip('cupy')
     try: count=cp.cuda.runtime.getDeviceCount()

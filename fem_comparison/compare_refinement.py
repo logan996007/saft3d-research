@@ -44,7 +44,7 @@ def compare():
             agent_report=json.loads(paths['saft'].with_suffix('.json').read_text(encoding='utf8'))
             if problem=='s':
                 assert agent_report['validation']['valid'] and agent_report['generator']['backend']=='cuda'
-                assert agent_report['generator']['mode']=='aft'
+                assert agent_report['generator']['mode'] in ('aft','batched')
             else:
                 assert agent_report['mesh_validation']['valid']
             for variant,(p,t,f) in meshes.items():

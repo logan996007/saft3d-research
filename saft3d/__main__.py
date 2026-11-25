@@ -19,6 +19,8 @@ def main():
                         help="target unconstrained P1 displacement DOFs for the benchmark U bracket")
     parser.add_argument("--layers",type=int,default=5,
                         help="number of through-thickness intervals for matching z-extruded caps")
+    parser.add_argument("--prism-mode",choices=["batched","aft","sweep"],default="batched",
+                        help="thickness mode: batched local AFT, serial reference AFT, or direct sweep")
     parser.add_argument("--input",type=Path,help="outward triangular surface: JSON, OBJ or STL")
     parser.add_argument("--backend",choices=["cpu","cuda","auto"],default="cpu")
     parser.add_argument("--size",type=float,default=.6)
@@ -67,7 +69,7 @@ def main():
                 raise ValueError('--layers must be positive')
             from .thickness_front import grow_thickness_front
             fractions=np.linspace(0.,1.,args.layers+1)
-            out_vertices,tets,faces,run=grow_thickness_front(vertices,faces,fractions,backend=args.backend,mode='aft')
+            out_vertices,tets,faces,run=grow_thickness_front(vertices,faces,fractions,backend=args.backend,mode=args.prism_mode)
         else:
             cfg=MesherConfig(backend=args.backend,batch_size=args.batch,growth_rounds=args.rounds,size=args.size)
             out_vertices,tets,run=grow_mesh(vertices,faces,cfg)

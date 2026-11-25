@@ -13,7 +13,7 @@ from .backend import create_backend
 from .geometry import tet_faces
 from .mesher import check_surface,face_key,orientation
 from .surface_validation import check_embedded_surface
-from .front_geometry import FrontGeometry
+from .front_geometry import FrontGeometry,FrontContactCache
 
 
 @dataclass
@@ -41,6 +41,26 @@ class StalledFront(RuntimeError):
         self.tetrahedra=tetrahedra
         self.front=front
         self.report=report
+
+
+def _front_delta(front, indices):
+    """Compute four oriented face toggles without copying the complete front.
+
+    The caller maintains an initially checked closed chain. Subtracting a
+    tetrahedron boundary preserves zero signed incidence at every edge
+    (the boundary of a boundary is zero), including edges at shell mergers.
+    """
+    delta=[]
+    for f in tet_faces(indices):
+        key=face_key(f)
+        existing=front.get(key)
+        if existing is None:
+            delta.append((key,(f[0],f[2],f[1])))
+        elif orientation(f)==orientation(existing):
+            delta.append((key,None))
+        else:
+            return None
+    return delta
 
 
 def _updated_front(front,indices):
@@ -93,6 +113,7 @@ def grow_general_mesh(vertices,boundary_faces,config=None,*,size_field=None):
     face_age={key:0 for key in front}
     points=list(v.copy()); tets=[]; history=[]
     backend=create_backend(cfg.backend)
+    contact_cache=FrontContactCache()
     observed_min, observed_max = float('inf'), 0.
     new_points=0; candidate_count=0; cursor=0; stalled_passes=0; exhaustive=False
     legal_stats=defaultdict(int)
@@ -102,9 +123,13 @@ def grow_general_mesh(vertices,boundary_faces,config=None,*,size_field=None):
         p=np.asarray(points)
         all_front=np.asarray(list(front.values()),dtype=np.int64)
         geom=FrontGeometry(p,all_front,cfg.tolerance)
+        geom.contact_cache=contact_cache
+        geom.face_tokens=contact_cache.face_tokens(all_front)
         active_ids=np.unique(all_front)
-        ordered=sorted(front.items(),key=lambda item:(face_age[item[0]],
-            float(np.max(np.linalg.norm(p[list(item[1])]-np.roll(p[list(item[1])],-1,axis=0),axis=1))),item[0]))
+        xyz=geom.triangles
+        lengths=np.linalg.norm(xyz-np.roll(xyz,-1,axis=1),axis=2).max(axis=1)
+        length_by_face=dict(zip(front,lengths))
+        ordered=sorted(front.items(),key=lambda item:(face_age[item[0]],length_by_face[item[0]],item[0]))
         selected=ordered[cursor:cursor+cfg.batch_size]
         if not selected:
             cursor=0; selected=ordered[:cfg.batch_size]
@@ -118,53 +143,60 @@ def grow_general_mesh(vertices,boundary_faces,config=None,*,size_field=None):
         observed_min = min(observed_min, float(physical_sizes.min()))
         observed_max = max(observed_max, float(physical_sizes.max()))
         targets = physical_sizes / scale
-        size_by_face = {item[0]: h for item,h in zip(selected, targets)}
         proposed,valid=backend.propose_local(base,targets,cfg.tolerance)
-        candidates=[]; metadata=[]
+        blocks=[]; locations=[]; apex_ids=[]
+        active_points=p[active_ids]
         for row,(key,tri) in enumerate(selected):
-            center=base[row].mean(axis=0)
             ideal=proposed[row,0,3]
-            distance=np.linalg.norm(p[active_ids]-ideal,axis=1)
-            nearest=active_ids[np.argsort(distance,kind='stable')]
-            count=0
+            distance=np.linalg.norm(active_points-ideal,axis=1)
+            nearest=np.argsort(distance,kind='stable')
             normal=np.cross(base[row,1]-base[row,0],base[row,2]-base[row,0])
             normal/=np.linalg.norm(normal)
-            for pid in nearest:
-                pid=int(pid)
-                if pid in tri: continue
-                if np.dot(normal,p[pid]-base[row,0])>=-cfg.tolerance: continue
-                candidates.append(np.asarray([p[tri[0]],p[tri[2]],p[tri[1]],p[pid]]))
-                metadata.append((key,tri,pid))
-                count+=1
-                if not exhaustive and count>=cfg.candidate_vertices: break
+            offsets=active_points-base[row,0]
+            sides=offsets@normal
+            # Scalar dot recovers the historical decision on roundoff ties.
+            close=np.flatnonzero(abs(sides+cfg.tolerance)<32*np.finfo(float).eps)
+            for j in close:sides[j]=np.dot(normal,offsets[j])
+            inward=sides< -cfg.tolerance
+            for idx in tri:inward &= active_ids!=idx
+            existing=active_ids[nearest[inward[nearest]]]
+            if not exhaustive:existing=existing[:cfg.candidate_vertices]
+            if len(existing):
+                block=np.empty((len(existing),4,3))
+                block[:,:3]=base[row,[0,2,1]];block[:,3]=p[existing]
+                blocks.append(block)
+                locations.extend([row]*len(existing));apex_ids.extend(map(int,existing))
             if new_points<cfg.max_new_vertices:
-                for slot in np.flatnonzero(valid[row]):
-                    tet=proposed[row,slot]
-                    # Do not create duplicate coordinates under different IDs.
-                    if np.min(np.linalg.norm(p-tet[3],axis=1))<=100*cfg.tolerance: continue
-                    candidates.append(tet); metadata.append((key,tri,-1))
-        if candidates:
-            candidates=np.asarray(candidates)
+                block=proposed[row,valid[row]]
+                if len(block):
+                    distances=np.linalg.norm(p[None]-block[:,3,None,:],axis=2)
+                    block=block[distances.min(axis=1)>100*cfg.tolerance]
+                if len(block):
+                    blocks.append(block)
+                    locations.extend([row]*len(block));apex_ids.extend([-1]*len(block))
+        if blocks:
+            candidates=np.concatenate(blocks)
             vols,qualities=backend.evaluate(candidates)
             overlaps_existing=(backend.overlaps(candidates,p[np.asarray(tets)],cfg.tolerance)
                                if tets else np.zeros(len(candidates),bool))
             candidate_count+=len(candidates)
-            grouped=defaultdict(list)
-            for i,(key,tri,pid) in enumerate(metadata):
-                required=cfg.new_vertex_min_quality if pid<0 else cfg.min_quality
-                if vols[i]<=1e-12 or qualities[i]<required or overlaps_existing[i]: continue
-                length=np.linalg.norm(candidates[i,3]-candidates[i,:3],axis=1).mean()
-                target=size_by_face[key]
-                sizing=min(length/target,target/max(length,1e-30))
+            grouped=[[] for _ in selected]
+            required=np.where(np.asarray(apex_ids)<0,cfg.new_vertex_min_quality,cfg.min_quality)
+            eligible=np.flatnonzero((vols>1e-12)&(qualities>=required)&~overlaps_existing)
+            lengths=np.linalg.norm(candidates[eligible,3,None,:]-candidates[eligible,:3],axis=2).mean(axis=1)
+            target=targets[np.asarray(locations)[eligible]]
+            ratios=np.minimum(lengths/target,target/np.maximum(lengths,1e-30))
+            for i,sizing in zip(eligible,ratios):
+                pid=apex_ids[i]
                 # Favor reusing vertices enough to merge fronts, but not at any quality.
                 score=float(qualities[i])*sizing**.35*(1.08 if pid>=0 else 1.)
-                grouped[key].append((score,i))
+                grouped[locations[i]].append((score,int(i)))
             winners=[]
-            for key,_ in selected:
-                for score,i in sorted(grouped[key],reverse=True):
-                    _,tri,pid=metadata[i]
+            for row,(_,tri) in enumerate(selected):
+                for score,i in sorted(grouped[row],reverse=True):
+                    pid=apex_ids[i]
                     idx=(tri[0],tri[2],tri[1],pid if pid>=0 else len(points))
-                    if _updated_front(front,idx) is None: continue
+                    if _front_delta(front,idx) is None: continue
                     if geom.valid_candidate(candidates[i],(tri[0],tri[2],tri[1],pid)):
                         winners.append(i); break
             if winners:
@@ -177,18 +209,22 @@ def grow_general_mesh(vertices,boundary_faces,config=None,*,size_field=None):
                     chosen.append(j)
                 accepted=0
                 for j in chosen:
-                    i=winners[j]; key,tri,pid=metadata[i]
+                    i=winners[j]; key,tri=selected[locations[i]];pid=apex_ids[i]
                     if key not in front: continue
                     if pid<0 and new_points>=cfg.max_new_vertices: continue
                     if len(tets)>=cfg.max_tets:
                         stop_reason='tetrahedron_limit'; break
                     idx=(tri[0],tri[2],tri[1],pid if pid>=0 else len(points))
-                    update=_updated_front(front,idx)
-                    if update is None: continue
+                    delta=_front_delta(front,idx)
+                    if delta is None: continue
                     if pid<0:
                         points.append(candidates[i,3].copy()); new_points+=1
-                    tets.append(idx); front=update; accepted+=1
-                    face_age={key:face_age.get(key,iteration+1) for key in front}
+                    tets.append(idx); accepted+=1
+                    for changed,face in delta:
+                        if face is None:
+                            del front[changed];del face_age[changed]
+                        else:
+                            front[changed]=face;face_age[changed]=iteration+1
                 if accepted:
                     history.append({"iteration":iteration,"front_faces":len(front),"proposals":len(candidates),
                                     "winners":len(winners),"accepted":accepted,"new_vertices":new_points})
@@ -243,8 +279,11 @@ def grow_general_mesh(vertices,boundary_faces,config=None,*,size_field=None):
                 if rollback:
                     retry_front={face_key(face):tuple(map(int,face)) for face in f}
                     for tet in retained:
-                        retry_front=_updated_front(retry_front,tuple(map(int,tet)))
-                        if retry_front is None: raise RuntimeError('cannot reconstruct a valid rollback boundary chain')
+                        change=_front_delta(retry_front,tuple(map(int,tet)))
+                        if change is None:raise RuntimeError('cannot reconstruct a valid rollback boundary chain')
+                        for changed, face in change:
+                            if face is None:del retry_front[changed]
+                            else:retry_front[changed]=face
                 attempt={'rolled_back_tets':rollback,'retained_aft_tets':len(retained),
                          'rolled_back_tet_indices':list(removed),'front_faces':len(retry_front)}
                 try:

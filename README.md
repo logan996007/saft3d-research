@@ -4,6 +4,8 @@ GPU-assisted generation of tetrahedral volume meshes from closed triangular surf
 
 The general mesher grows tetrahedra inward from an oriented triangle front. CUDA kernels propose vertices, score tetrahedra and check conflicts. CPU code checks geometric legality, selects independent candidates and updates the front. If advancement stalls, the default mode passes the remaining cavity to a CPU TetGen worker and verifies that every interface triangle is preserved. Reports record the contributions of both methods. [Methods and attribution](THIRD_PARTY.md)
 
+Version 0.2 batches independent prism fronts and speeds up general front checks and final auditing. The optional quality pass improved the U bracket’s worst mean ratio from 0.00366 to 0.07624 at the same 3,078 free DOFs. Its displacement error stayed below 5% against both numerical references. [Current benchmarks, quality and reproduction](docs/optimization.md)
+
 ## Get started
 
 Clone the repository and run the following commands from its root with Python 3.10–3.12. A virtual environment is recommended.
@@ -27,7 +29,7 @@ Open `mesh.vtk` in ParaView, `mesh.msh` in Gmsh, or `viewer.html` in a browser. 
 ## Geometry and validation
 
 - **General domains.** Local front vertices can merge across arms and shells. The front may become a singular oriented chain during valid transitions. Examples include a U bracket, a hollow cube and a torus.
-- **Extrusions.** Matching planar caps support thickness-directed layers. The `thickness` CLI method partitions each layer into triangular prisms and runs local AFT. A separate direct staircase sweep in the scale benchmark uses predefined connectivity for straight extrusions.
+- **Extrusions.** Matching planar caps support thickness-directed layers. The `thickness` CLI method runs batched advancing fronts by default. Select `--prism-mode aft` for the old serial dispatch or `--prism-mode sweep` for direct staircase connectivity. Explicit `--backend cuda` uses the GPU. In batched mode `--backend auto` selects CPU for a small batch when the CUDA backend has not yet been initialized in this process.
 - **Checks.** Validation checks signed volumes, orientation, boundary matching and volume conservation. Broad-phase filtering and separating-plane certificates remove simple pairs; independent barycentric linear programs check remaining pairs for penetration and nonconforming contact. Predicates use floating-point tolerances.
 - **Limits.** The general input checker supports up to 2,048 boundary triangles. The solver uses a local size heuristic with fixed boundary facets. Slivers, stalled fronts and expensive host-side legality checks remain possible. Inspect the outputs and check convergence for your physical observable.
 
@@ -35,7 +37,7 @@ Open `mesh.vtk` in ParaView, `mesh.msh` in Gmsh, or `viewer.html` in a browser. 
 
 On a bending U bracket with 3,078 free P1 displacement DOFs, error-driven redistribution of vertices and local connectivity optimization reduced the loaded-face displacement error from 13.97% to 4.34% against a refined P2 reference. The corresponding conventional CPU TetGen mesh gave 13.83%. This comparison uses the same material, boundary conditions and P1 solver. [Accuracy experiment and reproduction](docs/accuracy.md) · [Audited P1 result](output/u-goal-adapt/p1-polished/audit.json)
 
-On an i5-9300H and GTX 1660 Ti, general AFT generated an identical 201-cell hollow mesh in 48.41 s with the project's CPU backend and 10.98 s with CUDA. A regular U extrusion with 37,748,736 tetrahedra took 18.80 s on NumPy and 1.00 s on CUDA in the direct sweep benchmark, including cell checks and return to host memory. These experiments measure different algorithms and workloads. [Scale, timing scopes and CPU TetGen comparisons](docs/performance.md)
+On an i5-9300H and GTX 1660 Ti, optimized general AFT generated an identical 201-cell hollow mesh in 4.21 s with the CPU backend and 2.82 s with CUDA. A separate direct sweep benchmark on a regular U extrusion with 37,748,736 tetrahedra took 18.80 s on NumPy and 1.00 s on CUDA, including cell checks and return to host memory. [Current timings](docs/optimization.md) · [Initial scale measurements and CPU TetGen comparisons](docs/performance.md)
 
 The published fixtures are synthetic. Use a repository checkout and editable install to run the experiments that read these fixtures. The Python wheel contains the library and CUDA kernels. The generator, validation and tests are in `saft3d/` and `tests/`. Benchmark drivers and finite-element solvers are in `fem_comparison/`. [Source and fixture provenance](provenance.json)
 

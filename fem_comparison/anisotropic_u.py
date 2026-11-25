@@ -11,7 +11,7 @@ from fem_comparison.elasticity import solve
 from fem_comparison.run import ROOT,vtk_fields
 
 
-def run(quick=False,pilot='p2'):
+def run(quick=False,pilot='p2',prism_mode='batched'):
     folder='p1-anisotropic' if pilot=='p1' else 'anisotropic'
     out=ROOT/'output'/'u-goal-adapt'/folder
     out.mkdir(parents=True,exist_ok=True)
@@ -24,7 +24,7 @@ def run(quick=False,pilot='p2'):
     layouts=[(2,.8,3),(3,.8,3),(6,.8,3),(3,1.,5),(2,1.,5),(3,.55,2)]
     for nz,expo,aspect in layouts:
         xy,cap,nb=adapted_section(centres,G,vol,1026//nz,exponent=expo,aspect=aspect,iterations=iterations,resolution=resolution)
-        p,t,f,gen=extrude_section(xy,cap,nb,nz,backend='cuda')
+        p,t,f,gen=extrude_section(xy,cap,nb,nz,backend='cuda',mode=prism_mode)
         q,_=solve(p,t,f)
         if q['free_dofs']!=3078: raise ValueError('unconstrained DOF budget changed')
         label=f'z{nz}_weight{expo}_aspect{aspect}'
@@ -77,6 +77,7 @@ if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--quick',action='store_true');parser.add_argument('--pilot',choices=['p1','p2'],default='p2')
     parser.add_argument('--verify-p1-aft',action='store_true')
+    parser.add_argument('--prism-mode',choices=['batched','sweep'],default='batched')
     args=parser.parse_args()
     if args.verify_p1_aft:verify_p1_aft()
-    else:run(args.quick,args.pilot)
+    else:run(args.quick,args.pilot,args.prism_mode)

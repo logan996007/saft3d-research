@@ -1,0 +1,327 @@
+{
+  "method": "fixed-connectivity quality relaxation",
+  "source": "output/u-goal-adapt/p1-polished/mesh.npz",
+  "source_sha256": "5e321a91cc700e876eaea2ce54335ee1983a73da783e0156829e3a4f1f633380",
+  "parameters": {
+    "preset": "fast",
+    "compliance_loss_budget": 0.003
+  },
+  "before": {
+    "mean_ratio": {
+      "min": 0.003662264546755977,
+      "p05": 0.11223190296521575,
+      "median": 0.3798617362289491
+    },
+    "dihedral_degrees": {
+      "min": 0.11428627084087542,
+      "p05_cell_min": 7.263584737997407,
+      "median_cell_min": 32.72480130821082,
+      "max": 176.49786697171612
+    },
+    "min_signed_volume": 1.6542006805893402e-06
+  },
+  "after": {
+    "mean_ratio": {
+      "min": 0.04545478670839993,
+      "p05": 0.10918232123314613,
+      "median": 0.37985437533704935
+    },
+    "dihedral_degrees": {
+      "min": 1.2908542133130796,
+      "p05_cell_min": 7.447035445869115,
+      "median_cell_min": 33.32284341716839,
+      "max": 165.9472202227997
+    },
+    "min_signed_volume": 5.82327193725021e-05
+  },
+  "elasticity_before": {
+    "young_modulus_Pa": 200000000000.0,
+    "poisson_ratio": 0.3,
+    "active_vertices": 1038,
+    "free_dofs": 3078,
+    "tetrahedra": 3527,
+    "reaction_N": [
+      -1000000.0000000892,
+      1.0423063940834254e-06,
+      4.604498826665804e-08
+    ],
+    "external_force_N": [
+      1000000.0000000001,
+      0.0,
+      0.0
+    ],
+    "force_balance_relative": 1.04711701246641e-12,
+    "free_residual_relative": 4.121512775490039e-12,
+    "strain_energy_J": 563.8910685301084,
+    "compliance_J": 1127.7821370601118,
+    "energy_identity_relative": 9.314444217799677e-14,
+    "max_nodal_displacement_m": 0.0014008953759276177,
+    "max_element_von_mises_Pa": 95704924.22692874,
+    "traction_x_Pa": 1000000.0,
+    "loaded_area_m2": 0.9999999999999999,
+    "clamped_area_m2": 1.0,
+    "mean_loaded_ux_m": 0.001127782137060112,
+    "solve_seconds": 0.1294808997772634
+  },
+  "elasticity_after": {
+    "young_modulus_Pa": 200000000000.0,
+    "poisson_ratio": 0.3,
+    "active_vertices": 1038,
+    "free_dofs": 3078,
+    "tetrahedra": 3527,
+    "reaction_N": [
+      -1000000.0000005023,
+      2.789856807794422e-07,
+      5.151923687662929e-08
+    ],
+    "external_force_N": [
+      1000000.0000000001,
+      0.0,
+      0.0
+    ],
+    "force_balance_relative": 5.768083299753433e-13,
+    "free_residual_relative": 3.090880058314418e-12,
+    "strain_energy_J": 562.2598576229782,
+    "compliance_J": 1124.5197152459693,
+    "energy_identity_relative": 1.1525186552580258e-14,
+    "max_nodal_displacement_m": 0.0013970505035168007,
+    "max_element_von_mises_Pa": 50072821.43527252,
+    "traction_x_Pa": 1000000.0,
+    "loaded_area_m2": 0.9999999999999999,
+    "clamped_area_m2": 0.9999999999999999,
+    "mean_loaded_ux_m": 0.0011245197152459695,
+    "solve_seconds": 0.10629600007086992
+  },
+  "independent_p1": {
+    "mean_loaded_ux_m": 0.001124519715246138,
+    "order": 1,
+    "free_dofs": 3078,
+    "loaded_area_m2": 0.9999999999999999
+  },
+  "validation": {
+    "valid": true,
+    "errors": [],
+    "vertex_count": 1038,
+    "tet_count": 3527,
+    "boundary_face_count": 1584,
+    "extracted_boundary_face_count": 1584,
+    "checked_pairs": 101062,
+    "certified_pairs": 101062,
+    "total_pairs": 6218101,
+    "lp_calls": 0,
+    "overlap_count": 0,
+    "overlap_pairs": [],
+    "nonconforming_contact_count": 0,
+    "nonconforming_contact_pairs": [],
+    "intersection_failure_count": 0,
+    "intersection_failures": [],
+    "geometric_intersections_checked": true,
+    "numerical_validation": true,
+    "validation_note": "Floating-point, tolerance-based validation; not an exact-arithmetic proof. Geometric pair details are capped at 50; counts are exhaustive.",
+    "tolerances": {
+      "volume": 2.7e-11,
+      "coordinate": 3e-10,
+      "barycentric": 1e-08,
+      "relative_volume": 1e-07
+    },
+    "positive_tet_count": 3527,
+    "inverted_tet_count": 0,
+    "degenerate_tet_count": 0,
+    "min_signed_volume": 5.823271937250209e-05,
+    "signed_volume_sum": 7.0,
+    "positive_volume_min": 5.823271937250209e-05,
+    "positive_volume_sum": 7.0,
+    "duplicate_tet_count": 0,
+    "internal_face_count": 6262,
+    "nonmanifold_face_count": 0,
+    "internal_orientation_error_count": 0,
+    "face_manifold": true,
+    "internal_faces_oppositely_oriented": true,
+    "boundary_faces_match": true,
+    "missing_boundary_face_count": 0,
+    "extra_boundary_face_count": 0,
+    "missing_boundary_faces": [],
+    "extra_boundary_faces": [],
+    "duplicate_boundary_face_count": 0,
+    "boundary_orientation_error_count": 0,
+    "boundary_edge_error_count": 0,
+    "boundary_closed_oriented": true,
+    "signed_boundary_volume": 7.0,
+    "relative_volume_error": 0.0,
+    "unused_vertex_count": 0,
+    "unused_vertex_indices": [],
+    "quality": {
+      "metric": "mean_ratio: 12*(3*abs(volume))^(2/3)/sum(squared_edge_lengths)",
+      "ideal": 1.0,
+      "min": 0.04545478670839999,
+      "p05": 0.10918232123314615,
+      "median": 0.3798543753370493
+    },
+    "validation_seconds": 0.991409899899736
+  },
+  "physical_u_boundary": {
+    "all_faces_on_u_boundary": true,
+    "max_patch_area_error_m2": 1.1102230246251565e-16
+  },
+  "loss_budget": 0.003,
+  "measured_compliance_loss": 0.0028927766338336935,
+  "reference_displacements_mm": [
+    1.178976015011427,
+    1.18128326
+  ],
+  "posthoc_error_percent": [
+    4.618948907533948,
+    4.805244150673116
+  ],
+  "history": {
+    "fixed_connectivity": {
+      "before": {
+        "mean_ratio": {
+          "min": 0.003662264546755977,
+          "p05": 0.11223190296521575,
+          "median": 0.3798617362289491
+        },
+        "dihedral_degrees": {
+          "min": 0.11428627084087542,
+          "p05_cell_min": 7.263584737997407,
+          "median_cell_min": 32.72480130821082,
+          "max": 176.49786697171612
+        },
+        "min_signed_volume": 1.6542006805893402e-06
+      },
+      "after": {
+        "mean_ratio": {
+          "min": 0.04545478670839993,
+          "p05": 0.10918232123314613,
+          "median": 0.37985437533704935
+        },
+        "dihedral_degrees": {
+          "min": 1.2908542133130796,
+          "p05_cell_min": 7.447035445869115,
+          "median_cell_min": 33.32284341716839,
+          "max": 165.9472202227997
+        },
+        "min_signed_volume": 5.82327193725021e-05
+      },
+      "elasticity_before": {
+        "young_modulus_Pa": 200000000000.0,
+        "poisson_ratio": 0.3,
+        "active_vertices": 1038,
+        "free_dofs": 3078,
+        "tetrahedra": 3527,
+        "reaction_N": [
+          -1000000.0000000892,
+          1.0423063940834254e-06,
+          4.604498826665804e-08
+        ],
+        "external_force_N": [
+          1000000.0000000001,
+          0.0,
+          0.0
+        ],
+        "force_balance_relative": 1.04711701246641e-12,
+        "free_residual_relative": 4.121512775490039e-12,
+        "strain_energy_J": 563.8910685301084,
+        "compliance_J": 1127.7821370601118,
+        "energy_identity_relative": 9.314444217799677e-14,
+        "max_nodal_displacement_m": 0.0014008953759276177,
+        "max_element_von_mises_Pa": 95704924.22692874,
+        "traction_x_Pa": 1000000.0,
+        "loaded_area_m2": 0.9999999999999999,
+        "clamped_area_m2": 1.0,
+        "mean_loaded_ux_m": 0.001127782137060112,
+        "solve_seconds": 0.12016010005027056
+      },
+      "elasticity_after": {
+        "young_modulus_Pa": 200000000000.0,
+        "poisson_ratio": 0.3,
+        "active_vertices": 1038,
+        "free_dofs": 3078,
+        "tetrahedra": 3527,
+        "reaction_N": [
+          -1000000.0000005023,
+          2.789856807794422e-07,
+          5.151923687662929e-08
+        ],
+        "external_force_N": [
+          1000000.0000000001,
+          0.0,
+          0.0
+        ],
+        "force_balance_relative": 5.768083299753433e-13,
+        "free_residual_relative": 3.090880058314418e-12,
+        "strain_energy_J": 562.2598576229782,
+        "compliance_J": 1124.5197152459693,
+        "energy_identity_relative": 1.1525186552580258e-14,
+        "max_nodal_displacement_m": 0.0013970505035168007,
+        "max_element_von_mises_Pa": 50072821.43527252,
+        "traction_x_Pa": 1000000.0,
+        "loaded_area_m2": 0.9999999999999999,
+        "clamped_area_m2": 0.9999999999999999,
+        "mean_loaded_ux_m": 0.0011245197152459695,
+        "solve_seconds": 0.10548589983955026
+      },
+      "history": [
+        {
+          "target": 0.06,
+          "active_coordinates": 206,
+          "iterations": 90,
+          "cost": 0.0016834930103060766,
+          "accepted": true,
+          "fraction": 0.75,
+          "min_quality": 0.04390585023187286,
+          "min_angle": 1.263284645184907,
+          "compliance": 1124.6413110054555
+        },
+        {
+          "target": 0.1,
+          "active_coordinates": 395,
+          "iterations": 90,
+          "cost": 0.0038779528054866995,
+          "accepted": true,
+          "fraction": 0.03125,
+          "min_quality": 0.04545478670839993,
+          "min_angle": 1.2908542133130796,
+          "compliance": 1124.5197152459693
+        },
+        {
+          "target": 0.16,
+          "active_coordinates": 774,
+          "iterations": 90,
+          "cost": 0.027547040821034027,
+          "accepted": false
+        },
+        {
+          "target": 0.24,
+          "active_coordinates": 1576,
+          "iterations": 90,
+          "cost": 0.14834129753171715,
+          "accepted": false
+        },
+        {
+          "target": 0.32,
+          "active_coordinates": 1989,
+          "iterations": 90,
+          "cost": 0.9468892966705184,
+          "accepted": false
+        }
+      ],
+      "loss_budget": 0.003,
+      "measured_compliance_loss": 0.0028927766338336753,
+      "seconds": 7.069140299921855,
+      "boundary_check": {
+        "boundary_coordinate_constraints_exact": true,
+        "all_face_orientations_preserved": true,
+        "max_plane_area_relative_change": 3.33066907387547e-16,
+        "max_vertex_motion_m": 0.03320850990471401,
+        "mean_vertex_motion_m": 0.0008679512224990599
+      },
+      "final_dofs": 3078
+    }
+  },
+  "seconds_by_stage": {
+    "quality_relax": 7.071775800082833
+  },
+  "optimization_seconds": 7.209529099985957,
+  "total_seconds": 8.71824620012194
+}

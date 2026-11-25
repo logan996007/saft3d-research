@@ -164,16 +164,26 @@ def adapted_section(centres,G,vol,free_points,*,exponent=.8,aspect=3,iterations=
     return points,cap,nb
 
 
-def extrude_section(xy,cap,nb,nz,backend='cpu'):
+def extrude_section(xy,cap,nb,nz,backend='cpu',*,mode='batched'):
     from saft3d.backend import create_backend
     from saft3d.thickness_front import _advance_cap
+    from saft3d.batched_prism import advance_batched_prisms
     from fem_comparison.cpu_meshes import extract_boundary
     xy=np.ascontiguousarray(xy,dtype=np.float64)
     cap=np.ascontiguousarray(cap,dtype=np.int64)
     p=np.vstack([np.column_stack((xy,np.full(len(xy),z))) for z in np.linspace(-.5,.5,nz)])
     layers=np.arange(len(p),dtype=np.int64).reshape(nz,len(xy));engine=create_backend(backend)
-    cells=_advance_cap(xy,cap,layers,engine)
-    return p,cells,extract_boundary(cells),{'backend':engine.name,'device':engine.device_info,'cap_triangles':len(cap),'cap_vertices':len(xy),'cap_boundary_nodes':nb,'z_planes':nz,'cuda_advance_kernels':nz-1 if backend=='cuda' else 0, 'method':'thickness_front directional prism advance (sweep kernel) on error-adapted triangular cross-section','cpu_completion':False}
+    if mode=='batched':
+        cells, evidence = advance_batched_prisms(p,cap,layers,engine)
+        launches = evidence['kernel_calls']['batch_front']
+    elif mode=='sweep':
+        cells=_advance_cap(xy,cap,layers,engine)
+        if engine.name=='cuda':
+            cells=engine.cp.asnumpy(cells)
+        launches=nz-1 if engine.name=='cuda' else 0
+    else:
+        raise ValueError('mode must be batched or sweep')
+    return p,cells,extract_boundary(cells),{'backend':engine.name,'device':engine.device_info,'cap_triangles':len(cap),'cap_vertices':len(xy),'cap_boundary_nodes':nb,'z_planes':nz,'cuda_advance_kernels':launches, 'method':mode+' prism generation on an error-adapted cross-section','cpu_completion':False}
 
 
 
